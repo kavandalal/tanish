@@ -9,8 +9,6 @@ const connectMongoDB = async () => {
 		const uri: string = process.env.MONGODB_URI || '';
 		if (!uri) return new Error('Mongo URI is not valid!!');
 
-		console.log({ uri });
-
 		const connection = await mongoose.connect(uri);
 		cachedConnection = connection;
 

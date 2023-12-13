@@ -1,7 +1,8 @@
 export default interface user {
-	firstName: String;
-	lastName: String;
+	name: String;
 	email: String;
+	phone?: String;
 	side: String;
 	role: String;
+	postsRef?: [String];
 }

@@ -19,8 +19,7 @@ export default function Home() {
 			<b>LOGIN page</b>
 			<div>This page will have text field for:</div>
 			<ul>
-				<li>First Name *</li>
-				<li>Last Name *</li>
+				<li>Name *</li>
 				<li>Email or Phone Number(one of them will be required) </li>
 				<li>From which side they (Bride/Groom)</li>
 			</ul>
