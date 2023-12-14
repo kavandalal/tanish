@@ -11,6 +11,7 @@ import { checkMongooseRef } from '@/lib/server-helper';
 export async function GET(req: NextApiRequest, { params }: { params: { userID: string } }) {
 	try {
 		const userRef = params.userID;
+		if (!userRef) throw new BadRequestError('User ID is required');
 		if (!checkMongooseRef(userRef)) throw new BadRequestError('User ID is not valid!!!');
 
 		await connectMongoDB();
@@ -30,10 +31,11 @@ export async function GET(req: NextApiRequest, { params }: { params: { userID: s
 
 export async function PATCH(req: Request, { params }: { params: { userID: string } }) {
 	try {
-		const data: userType = await req.json();
-
 		const userRef = params.userID;
+		if (!userRef) throw new BadRequestError('User ID is required');
 		if (!checkMongooseRef(userRef)) throw new BadRequestError('User ID is not valid!!!');
+
+		const data: userType = await req.json();
 
 		await connectMongoDB();
 
@@ -41,26 +43,6 @@ export async function PATCH(req: Request, { params }: { params: { userID: string
 		if (!packet) throw new BadRequestError('User does not exists!!!');
 
 		return NextResponse.json({ ok: true, packet });
-	} catch (err) {
-		if (err instanceof CustomError) {
-			return ErrorHandler(err);
-		} else {
-			throw err;
-		}
-	}
-}
-
-export async function DELETE(req: NextApiRequest, { params }: { params: { userID: string } }) {
-	try {
-		const userRef = params.userID;
-		if (!checkMongooseRef(userRef)) throw new BadRequestError('User ID is not valid!!!');
-
-		await connectMongoDB();
-
-		let packet = await User.findOneAndDelete({ _id: userRef });
-		if (!packet) throw new BadRequestError('User does not exists!!!');
-
-		return NextResponse.json({ ok: true });
 	} catch (err) {
 		if (err instanceof CustomError) {
 			return ErrorHandler(err);

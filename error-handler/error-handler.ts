@@ -5,7 +5,7 @@ import CustomError from '@/error-handler/custom-error';
 const ErrorHandler = (err: Error) => {
 	if (err instanceof CustomError) {
 		const errArray = err.serializeErrors();
-		return NextResponse.json({ ok: false, errors: errArray });
+		return NextResponse.json({ ok: false, errors: errArray }, { status: err.statusCode });
 	}
 
 	const defaultErr = 'Unhandled Server Error';

@@ -1,6 +1,7 @@
 import mongoose, { Schema } from 'mongoose';
+import post from './post.types';
 
-const postSchema = new Schema(
+const postSchema = new Schema<post>(
 	{
 		eventRef: { type: Schema.Types.ObjectId, ref: 'Event', required: true, index: true },
 		createdBy: { type: Schema.Types.ObjectId, ref: 'User', required: true, index: true },

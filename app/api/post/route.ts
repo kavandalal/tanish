@@ -1,6 +1,6 @@
 import connectMongoDB from '@/lib/mongodb';
-import Event from '@/model/event';
-import eventType from '@/model/event.types';
+import Post from '@/model/post';
+import postType from '@/model/post.types';
 import { NextResponse, NextRequest } from 'next/server';
 import BadRequestError from '@/error-handler/bad-request';
 import ErrorHandler from '@/error-handler/error-handler';
@@ -9,15 +9,14 @@ import InternalServerError from '@/error-handler/internal-server';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { checkMongooseRef } from '@/lib/server-helper';
 
-export async function GET(req: NextApiRequest, { params }: { params: { eventID: string } }) {
+export async function POST(req: NextRequest) {
 	try {
-		const eventRef = params.eventID;
-		if (!checkMongooseRef(eventRef)) throw new BadRequestError('Event ID is not valid!!!');
+		let data: postType = await req.json();
+		data = await validatePOST(data);
 
 		await connectMongoDB();
 
-		let packet = await Event.findOne({ _id: eventRef, isPrivate: false });
-		if (!packet) throw new BadRequestError('Event does not exists!!!');
+		const packet = await Post.create(data);
 
 		return NextResponse.json({ ok: true, packet });
 	} catch (err) {
@@ -28,3 +27,12 @@ export async function GET(req: NextApiRequest, { params }: { params: { eventID: 
 		}
 	}
 }
+
+const validatePOST = async (body: postType) => {
+	if (!body.eventRef) throw new BadRequestError('EventRef is required');
+	if (!body.source) throw new BadRequestError('Source is required');
+	if (!body.caption) throw new BadRequestError('Caption is required');
+	if (!body.createdBy) throw new BadRequestError('CreatedBy is required');
+
+	return body;
+};
