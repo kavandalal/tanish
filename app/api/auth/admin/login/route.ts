@@ -9,7 +9,7 @@ import InternalServerError from '@/error-handler/internal-server';
 import Error from 'next/error';
 import { SignJWT } from 'jose';
 
-export const signJWT = async (payload: { userRef: string; role: string }, options: { exp: string }) => {
+const signJWT = async (payload: { userRef: string; role: string }, options: { exp: string }) => {
 	try {
 		const secret = new TextEncoder().encode(process.env.JWT_SECRET);
 		const alg = 'HS256';
