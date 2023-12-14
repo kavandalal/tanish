@@ -2,8 +2,8 @@ import { Types } from 'mongoose';
 
 export default interface post {
 	eventRef: Types.ObjectId;
+	source: String;
 	caption: String;
-	likes: [Types.ObjectId];
-	createdAt: Date;
 	createdBy: Types.ObjectId;
+	likes: [Types.ObjectId];
 }
