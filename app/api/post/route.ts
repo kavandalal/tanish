@@ -8,6 +8,7 @@ import CustomError from '@/error-handler/custom-error';
 import InternalServerError from '@/error-handler/internal-server';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { checkMongooseRef } from '@/lib/server-helper';
+import { headers } from 'next/headers';
 
 export async function POST(req: NextRequest) {
 	try {
@@ -32,6 +33,13 @@ const validatePOST = async (body: postType) => {
 	if (!body.eventRef) throw new BadRequestError('EventRef is required');
 	if (!body.source) throw new BadRequestError('Source is required');
 	if (!body.caption) throw new BadRequestError('Caption is required');
+	// if (!body.createdBy) throw new BadRequestError('CreatedBy is required');
+
+	const headersList = headers();
+	console.log('in post', headersList.get('token-decode'));
+	const middlewareSet = JSON.parse(headersList.get('token-decode') || '{}');
+
+	body.createdBy = middlewareSet?.userRef;
 	if (!body.createdBy) throw new BadRequestError('CreatedBy is required');
 
 	return body;

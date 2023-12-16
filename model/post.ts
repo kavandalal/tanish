@@ -6,7 +6,7 @@ const postSchema = new Schema<post>(
 		eventRef: { type: Schema.Types.ObjectId, ref: 'Event', required: true, index: true },
 		createdBy: { type: Schema.Types.ObjectId, ref: 'User', required: true, index: true },
 		caption: { type: String, trim: true },
-		source: { type: String, trim: true },
+		source: { type: String, trim: true, required: true },
 		likes: [{ type: Schema.Types.ObjectId, ref: 'User' }],
 	},
 	{

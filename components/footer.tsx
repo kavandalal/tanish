@@ -16,7 +16,7 @@ export interface routeType {
 const Footer = ({ routes }: { routes: routeType[] }) => {
 	return (
 		<nav
-			className='w-full justify-between items-center grid h-full sticky bottom-0'
+			className='w-full justify-between items-center grid h-full sticky bottom-0 z-50'
 			style={{
 				gridTemplateColumns: `repeat(${routes.length} , 1fr)`,
 				boxShadow: '0 10px 16px hsl(var(--foreground))',

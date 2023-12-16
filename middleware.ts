@@ -14,6 +14,15 @@ export const verifyJWT = async <T>(token: string): Promise<T> => {
 	}
 };
 
+// const appPages = ['/feed', '/explore', '/upload', '/timeline', '/profile'];
+
+// const isAppRoute = (url: string) => {
+// 	for (let i of appPages) {
+// 		if (url?.includes(i)) return true;
+// 	}
+// 	return false;
+// };
+
 const isAdminRoute = (url: string) => {
 	return url.includes('/admin');
 };
@@ -26,31 +35,37 @@ export async function middleware(request: NextRequest) {
 		let cookie = request.cookies.get(tokenName);
 		const secret = process.env.JWT_SECRET;
 
-		let isValid: { role: string; userRef: string };
-		if (cookie && cookie.value && secret) {
-			isValid = await verifyJWT(cookie.value);
-			const isAdminroute = isAdminRoute(request?.url);
-			// console.log('is admin-route', isAdminroute, ',, role =', isValid?.role);
-
-			if (isAdminroute && isValid?.role !== 'admin') {
-				const response = NextResponse.redirect(new URL('/feed', request.url));
-				return response;
-			}
-
-			// const response = NextResponse.next();
-			// return response;
-
-			const requestHeaders = new Headers(request.headers);
-			requestHeaders.set('token-decode', JSON.stringify(isValid));
-
-			return NextResponse.next({
-				request: {
-					headers: requestHeaders,
-				},
-			});
+		if (!cookie || !cookie?.value) {
+			return NextResponse.redirect(new URL('/', request.url));
 		}
 
-		throw new InternalServerError('Something went wrong!');
+		let isValid: { role: string; userRef: string };
+		if (!cookie || !cookie.value || !secret) {
+			throw new InternalServerError('Something went wrong!');
+		}
+
+		isValid = await verifyJWT(cookie.value);
+		// console.log('is admin-route', isAdminroute, ',, role =', isValid?.role);
+
+		const requestHeaders = new Headers(request.headers);
+		requestHeaders.set('token-decode', JSON.stringify(isValid));
+
+		const isProfilePage = request?.nextUrl?.pathname === '/profile';
+		if (isProfilePage) {
+			return NextResponse.redirect(new URL(`/profile/${isValid?.userRef}`, request.url));
+		}
+
+		const isAdminroute = isAdminRoute(request?.url);
+		if (isAdminroute && isValid?.role !== 'admin') {
+			const response = NextResponse.redirect(new URL('/feed', request.url));
+			return response;
+		}
+
+		return NextResponse.next({
+			request: {
+				headers: requestHeaders,
+			},
+		});
 	} catch (err) {
 		if (err instanceof Unauthorized) {
 			return ErrorHandler(err);
@@ -59,5 +74,13 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-	matcher: ['/api/user', '/api/event', '/api/admin/user/:path*', '/api/admin/event/:path*', '/api/admin/post/:path*'],
+	matcher: [
+		'/profile',
+		'/api/user/:path*',
+		'/api/event/:path*',
+		'/api/post/:path*',
+		'/api/admin/user/:path*',
+		'/api/admin/:path*',
+		'/admin/:path*',
+	],
 };

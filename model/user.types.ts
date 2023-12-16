@@ -1,8 +1,11 @@
 export default interface user {
-	name: String;
-	email: String;
-	phone?: String;
-	side: String;
-	role: String;
-	postsRef?: [String];
+	_id: string;
+	createdAt: Date;
+	updatedAt: Date;
+	name: string;
+	email: string;
+	phone?: string;
+	side: string;
+	role: string;
+	postsRef?: [string];
 }

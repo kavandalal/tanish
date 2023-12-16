@@ -25,28 +25,29 @@ const signJWT = async (payload: { userRef: string; role: string }, options: { ex
 		throw error;
 	}
 };
+type login = { phone: string; email: string };
 
 export async function POST(req: NextRequest) {
-	let data: userType = await req.json();
+	let data: login = await req.json();
 	try {
 		console.log('inside POST register');
 		data = await validatePOST(data);
 
 		await connectMongoDB();
 
-		let userExists = await User.findOne({ email: data.email });
+		let userExists = await User.findOne({ $or: [{ email: data.email }, { phone: data.phone }] });
 		let packet;
 		if (userExists) {
-			packet = userExists;
-		} else {
-			packet = await User.create(data);
+			packet = { user: userExists, next: false };
+			const token = await signJWT({ userRef: userExists?._id, role: userExists?.role || 'user' }, { exp: `20d` });
+			const tokenName = `token-${process.env.EVENT_NAME}`;
+			const response = NextResponse.json({ ok: true, packet });
+			response.cookies.set(tokenName, token);
+			return response;
 		}
-		const token = await signJWT({ userRef: packet?._id, role: packet?.role || 'user' }, { exp: `20d` });
-		const tokenName = `token-${process.env.EVENT_NAME}`;
-
-		const response = NextResponse.json({ ok: true, packet });
-		response.cookies.set(tokenName, token);
-		return response;
+		// throw new BadRequestError('User with email already exists!!!');
+		packet = { user: null, next: true };
+		return NextResponse.json({ ok: true, packet });
 	} catch (err) {
 		if (err instanceof CustomError) {
 			return ErrorHandler(err);
@@ -56,12 +57,8 @@ export async function POST(req: NextRequest) {
 	}
 }
 
-const validatePOST = async (body: userType) => {
-	if (!body.name) throw new BadRequestError('Name is required');
-	if (!body.side) throw new BadRequestError('Ladkewale ya Ladkiwale ?');
-	if (!body.email && !body.phone) throw new BadRequestError('Email or Phone number is required');
-
-	body.role = 'user';
+const validatePOST = async (body: login) => {
+	if (!body.email && !body.phone) throw new BadRequestError('Phone or Email is required');
 
 	return body;
 };

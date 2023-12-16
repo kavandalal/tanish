@@ -6,6 +6,7 @@ import BadRequestError from '@/error-handler/bad-request';
 import ErrorHandler from '@/error-handler/error-handler';
 import CustomError from '@/error-handler/custom-error';
 import InternalServerError from '@/error-handler/internal-server';
+import { checkMongooseRef } from '@/lib/server-helper';
 
 export async function POST(req: Request) {
 	const data: eventType = await req.json();
@@ -35,8 +36,32 @@ export async function POST(req: Request) {
 	}
 }
 
+export async function PATCH(req: Request, { params }: { params: { eventID: string } }) {
+	try {
+		const data: eventType & { eventRef: string } = await req.json();
+
+		const eventRef = data?.eventRef;
+		if (!checkMongooseRef(eventRef)) throw new BadRequestError('Event ID is not valid!!!');
+
+		await connectMongoDB();
+
+		let packet = await Event.findOneAndUpdate({ _id: eventRef }, data, { new: true });
+		if (!packet) throw new BadRequestError('Event does not exists!!!');
+
+		return NextResponse.json({ ok: true, packet });
+	} catch (err) {
+		if (err instanceof CustomError) {
+			return ErrorHandler(err);
+		} else {
+			throw err;
+		}
+	}
+}
+
 const validatePOST = async (body: eventType) => {
 	if (!body.name) throw new BadRequestError('Event Name is required');
+	if (!body.map) throw new BadRequestError('Event map location is required');
+	if (!body.venue) throw new BadRequestError('Venue Name is required');
 
 	return body;
 };

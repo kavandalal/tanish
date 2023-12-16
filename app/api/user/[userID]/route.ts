@@ -28,26 +28,3 @@ export async function GET(req: NextRequest, { params }: { params: { userID: stri
 		}
 	}
 }
-
-export async function PATCH(req: Request, { params }: { params: { userID: string } }) {
-	try {
-		const userRef = params.userID;
-		if (!userRef) throw new BadRequestError('User ID is required');
-		if (!checkMongooseRef(userRef)) throw new BadRequestError('User ID is not valid!!!');
-
-		const data: userType = await req.json();
-
-		await connectMongoDB();
-
-		let packet = await User.findOneAndUpdate({ _id: userRef }, data, { new: true });
-		if (!packet) throw new BadRequestError('User does not exists!!!');
-
-		return NextResponse.json({ ok: true, packet });
-	} catch (err) {
-		if (err instanceof CustomError) {
-			return ErrorHandler(err);
-		} else {
-			throw err;
-		}
-	}
-}

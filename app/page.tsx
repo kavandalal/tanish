@@ -6,22 +6,24 @@ import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import axios from 'axios';
 import { useToast } from '@/components/ui/use-toast';
-
-const inputStyle =
-	'peer w-full px-0.5 border-0 border-b-2 border-gray-300 placeholder-transparent focus:ring-0 focus:border-purple-600';
-const labelStyle =
-	'absolute left-0 -top-5 text-gray-600 text-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-1 peer-focus:-top-5 peer-focus:text-purple-600 peer-focus:text-sm';
+import { useEffect, useState } from 'react';
+import { inputStyle, labelStyle } from '@/components/constant';
 
 export default function Home() {
 	const { toast } = useToast();
-
 	const router = useRouter();
 	const {
 		register,
 		watch,
 		handleSubmit,
+		setValue,
 		formState: { errors },
 	} = useForm();
+	const [step, setStep] = useState(1);
+
+	useEffect(() => {
+		setStep(1);
+	}, []);
 
 	const toHomePage = () => {
 		router.push('/feed');
@@ -31,7 +33,6 @@ export default function Home() {
 	};
 
 	const formSubmit = async (data: any) => {
-		console.log(data);
 		const sendData = {
 			...data,
 			name: data?.name
@@ -40,15 +41,26 @@ export default function Home() {
 				.join(' '),
 		};
 		try {
-			const packet: any = await axios.post('/api/auth/register', sendData);
+			let packet: any;
+			if (step === 1) {
+				packet = await axios.post('/api/auth/register/check', sendData);
+			} else {
+				packet = await axios.post('/api/auth/register', sendData);
+			}
 
-			console.log('---', packet?.data);
 			if (!packet?.data?.ok) {
 				toast({ variant: 'destructive', title: packet?.data?.errors?.[0]?.message });
 				return false;
 			}
+			if (packet?.data?.packet?.next) {
+				setStep(2);
+				setValue('email', sendData.email);
+				setValue('phone', sendData.phone);
+				toast({ description: 'Some more basic info' });
+				return;
+			}
 
-			toast({ description: 'Successfully updated data' });
+			toast({ description: 'Successfully loggedin' });
 			toHomePage();
 			return true;
 		} catch (err: any) {
@@ -77,60 +89,106 @@ export default function Home() {
 								<h1 className='text-3xl text-gray-800 h-20'>Basic Info</h1>
 							</div>
 
-							<form onSubmit={handleSubmit(formSubmit)} className='grid gap-10'>
-								<div className='relative'>
-									<input {...register('name', { required: true })} placeholder='Full Name' className={inputStyle} />
-									<label className={labelStyle}>Full Name</label>
-									{errors.name && <p className='text-destructive'>Name is required.</p>}
-								</div>
+							{step === 1 && (
+								<form onSubmit={handleSubmit(formSubmit)} className='grid gap-10'>
+									<div className='relative'>
+										<input
+											type='email'
+											// {...register('email', {
+											// 	validate: (email) => {
+											// 		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+											// 		return emailRegex.test(email);
+											// 	},
+											// })}
+											placeholder='Email'
+											className={inputStyle}
+										/>
+										<label className={labelStyle}>Email</label>
+									</div>
+									<div className='flex justify-center text-success'>
+										<span>OR</span>
+									</div>
 
-								<div className='relative'>
-									<input
-										type='email'
-										{...register('email', {
-											required: true,
-											validate: (email) => {
-												const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-												return emailRegex.test(email);
-											},
-										})}
-										placeholder='Email'
-										className={inputStyle}
-									/>
-									<label className={labelStyle}>Email</label>
-									{errors.email && <p className='text-destructive'>Email address is required.</p>}
-								</div>
+									<div className='relative'>
+										<input
+											type='tel'
+											{...register('phone', { valueAsNumber: true })}
+											placeholder='Phone Number'
+											className={inputStyle}
+										/>
+										<label className={labelStyle}>Phone Number</label>
+										{errors.phone && <p className='text-estructive'>Phone Number is required.</p>}
+									</div>
 
-								<div className='relative'>
-									<input
-										type='tel'
-										{...register('phone', { valueAsNumber: true })}
-										placeholder='Phone Number'
-										className={inputStyle}
-									/>
-									<label className={labelStyle}>Phone Number</label>
-									{errors.phone && <p className='text-estructive'>Phone Number is required.</p>}
-								</div>
+									{/* <input
+									className='btn mx-auto w-56 text-lg hover:cursor-pointer rounded text-white bg-gradient-to-r from-green-400 to-blue-500 hover:from-pink-500 hover:to-yellow-500 '
+									
+									value='Enter Event'
+								/> */}
+									<button
+										type='submit'
+										className='w-full mt-6 py-4 text-lg text-white font-semibold text-center rounded-full bg-purple-500 transition-all hover:bg-purple-600 focus:outline-none'>
+										Enter
+									</button>
+								</form>
+							)}
 
-								<div className='relative'>
-									<select {...register('side')} className={inputStyle}>
-										<option value='bride'>Ladkiwale (Bride)</option>
-										<option value='groom'>Ladkewale (Groom)</option>
-									</select>
-									<label className={labelStyle}>You belong from</label>
-								</div>
+							{step === 2 && (
+								<form onSubmit={handleSubmit(formSubmit)} className='grid gap-10'>
+									<div className='relative'>
+										<input {...register('name', { required: true })} placeholder='Full Name' className={inputStyle} />
+										<label className={labelStyle}>Full Name</label>
+										{errors.name && <p className='text-destructive'>Name is required.</p>}
+									</div>
 
-								{/* <input
+									<div className='relative'>
+										<input
+											type='email'
+											{...register('email', {
+												required: true,
+												validate: (email) => {
+													const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+													return emailRegex.test(email);
+												},
+											})}
+											placeholder='Email'
+											className={inputStyle}
+										/>
+										<label className={labelStyle}>Email</label>
+										{errors.email && <p className='text-destructive'>Email address is required.</p>}
+									</div>
+
+									<div className='relative'>
+										<input
+											type='tel'
+											{...register('phone', { valueAsNumber: true })}
+											placeholder='Phone Number'
+											className={inputStyle}
+										/>
+										<label className={labelStyle}>Phone Number</label>
+										{errors.phone && <p className='text-estructive'>Phone Number is required.</p>}
+									</div>
+
+									<div className='relative'>
+										<select {...register('side')} className={inputStyle}>
+											<option value='bride'>Ladkiwale (Bride)</option>
+											<option value='groom'>Ladkewale (Groom)</option>
+										</select>
+										<label className={labelStyle}>You belong from</label>
+									</div>
+
+									{/* <input
 								className='btn mx-auto w-56 text-lg hover:cursor-pointer rounded text-white bg-gradient-to-r from-green-400 to-blue-500 hover:from-pink-500 hover:to-yellow-500 '
 								
 								value='Enter Event'
 							/> */}
-								<button
-									type='submit'
-									className='w-full mt-6 py-4 text-lg text-white font-semibold text-center rounded-full bg-purple-500 transition-all hover:bg-purple-600 focus:outline-none'>
-									Enter
-								</button>
-							</form>
+									<button
+										type='submit'
+										className='w-full mt-6 py-4 text-lg text-white font-semibold text-center rounded-full bg-purple-500 transition-all hover:bg-purple-600 focus:outline-none'>
+										Enter
+									</button>
+								</form>
+							)}
 						</div>
 					</div>
 				</div>

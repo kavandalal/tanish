@@ -26,7 +26,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { postID: st
 		if (middlewareSet?.userRef !== postData.createdBy && middlewareSet?.role !== 'admin')
 			throw new BadRequestError('You cannot edit the post!!!');
 
-		const packet = await Post.findOneAndUpdate({ _id: postRef }, { data }, { new: true });
+		const packet = await Post.findOneAndUpdate({ _id: postRef }, data, { new: true });
 
 		return NextResponse.json({ ok: true, packet });
 	} catch (err) {

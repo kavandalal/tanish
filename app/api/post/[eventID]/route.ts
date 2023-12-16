@@ -15,14 +15,25 @@ export async function GET(req: NextRequest, { params }: { params: { eventID: str
 		if (!checkMongooseRef(eventRef)) throw new BadRequestError('Event ID is not valid!!!');
 
 		const searchParams = req.nextUrl.searchParams;
-		let page: number = Number(searchParams.get('page')) || 1;
+		const page: number = Number(searchParams.get('page')) || 1;
 		let limit: number = Number(searchParams.get('limit')) || 15;
 		limit = limit > 15 ? 15 : limit;
+
+		// type filterQuery = 'new' | 'old' | 'liked';
+		let filterQuery: string = searchParams?.get('filter') || 'new';
+		const filter = { createdAt: 0, likes: 0 };
+		if (filterQuery === 'new') {
+			filter.createdAt = -1;
+		} else if (filterQuery === 'new') {
+			filter.createdAt = 1;
+		} else {
+			filter.likes = -1;
+		}
 
 		await connectMongoDB();
 
 		let list = await Post.find({ eventRef })
-			.sort({ createdAt: -1 })
+			.sort(filter as any)
 			.skip(limit * (page - 1))
 			.limit(limit);
 

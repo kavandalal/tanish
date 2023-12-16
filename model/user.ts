@@ -1,6 +1,7 @@
 import mongoose, { Schema } from 'mongoose';
+import user from './user.types';
 
-const userSchema = new Schema(
+const userSchema = new Schema<user>(
 	{
 		name: { type: String, trim: true },
 		email: { type: String, trim: true, unique: true, index: true },

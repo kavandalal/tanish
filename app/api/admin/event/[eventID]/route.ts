@@ -29,30 +29,9 @@ export async function GET(req: NextRequest, { params }: { params: { eventID: str
 	}
 }
 
-export async function PATCH(req: Request, { params }: { params: { eventID: string } }) {
-	try {
-		const data: eventType = await req.json();
-
-		const eventRef = params.eventID;
-		if (!checkMongooseRef(eventRef)) throw new BadRequestError('Event ID is not valid!!!');
-
-		await connectMongoDB();
-
-		let packet = await Event.findOneAndUpdate({ _id: eventRef }, data, { new: true });
-		if (!packet) throw new BadRequestError('Event does not exists!!!');
-
-		return NextResponse.json({ ok: true, packet });
-	} catch (err) {
-		if (err instanceof CustomError) {
-			return ErrorHandler(err);
-		} else {
-			throw err;
-		}
-	}
-}
-
 export async function DELETE(req: NextRequest, { params }: { params: { eventID: string } }) {
 	try {
+		console.log('here ');
 		const eventRef = params.eventID;
 		if (!checkMongooseRef(eventRef)) throw new BadRequestError('Event ID is not valid!!!');
 
