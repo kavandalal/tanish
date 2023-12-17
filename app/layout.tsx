@@ -19,9 +19,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 			<body className={inter.className}>
 				<ThemeProvider attribute='class' defaultTheme='system' enableSystem>
 					<Toaster />
-
 					{children}
-					{/* <Toaster /> */}
 				</ThemeProvider>
 			</body>
 		</html>

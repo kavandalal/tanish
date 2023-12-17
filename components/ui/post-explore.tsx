@@ -10,14 +10,25 @@ import {
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from './dropdown-menu';
+import { useState } from 'react';
+import { useToast } from './use-toast';
 
 type PostExplore = {
 	data: postType;
 	editable: boolean;
 	openModal: ({ mode, id, data }: { mode?: string; id?: string; data?: postType }) => void;
+	deleteHandle: ({ id }: { id: string }) => void;
 };
 
-function PostExplore({ data, openModal, editable }: PostExplore) {
+function PostExplore({ data, openModal, editable, deleteHandle }: PostExplore) {
+	const { toast } = useToast();
+
+	const [popup, setPopup] = useState({ open: false });
+
+	const togglePopup = (status: boolean) => {
+		setPopup((prev) => ({ ...prev, open: status }));
+	};
+
 	return (
 		<div className='group aspect-square relative overflow-hidden bg-slate-100 dark:bg-slate-700 rounded-md'>
 			<img className='object-contain w-full h-full' src={data?.source} alt='' />
@@ -29,19 +40,32 @@ function PostExplore({ data, openModal, editable }: PostExplore) {
 			{editable && (
 				<div className='absolute z-20 top-4 right-4 '>
 					{/* <Button className='bg-white p-2'>h</Button> */}
-					<DropdownMenu>
-						<DropdownMenuTrigger asChild>
+					<DropdownMenu open={popup?.open} onOpenChange={(value) => togglePopup(value)}>
+						<DropdownMenuTrigger>
 							<Button variant='outline' className='w-8 px-1 h-8'>
 								<MoreVertical />
 							</Button>
 						</DropdownMenuTrigger>
 						<DropdownMenuContent className='w-12'>
 							<DropdownMenuGroup>
-								<DropdownMenuItem className='ps-4' onClick={() => openModal({ mode: 'edit', id: data?._id, data })}>
+								<DropdownMenuItem
+									className='ps-4'
+									onClick={() => {
+										openModal({ mode: 'edit', id: data?._id, data });
+									}}>
 									<PenIcon size={16} className='text-blue-500 me-3' />
 									Edit
 								</DropdownMenuItem>
-								<DropdownMenuItem className='ps-4' onClick={() => {}}>
+								<DropdownMenuItem
+									className='ps-4'
+									onClick={() => {
+										// deleteHandle({ id: data?._id });
+										toast({
+											title: `Delete Image`,
+											description: 'Once image is deleted you wont be able reverse',
+											action: <Button onClick={() => deleteHandle({ id: data?._id })}>Delete</Button>,
+										});
+									}}>
 									<Trash size={16} className='text-destructive me-3' />
 									Delete
 								</DropdownMenuItem>

@@ -55,7 +55,7 @@ export default function Upload() {
 				return false;
 			}
 
-			toast({ description: 'Successfully loggedin' });
+			toast({ description: 'Successfully uploaded the photo' });
 			return true;
 		} catch (err: any) {
 			const errMsg = err?.response?.data?.errors?.[0]?.message;

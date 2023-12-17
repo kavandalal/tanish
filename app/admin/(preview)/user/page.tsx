@@ -20,6 +20,7 @@ export default function AdminDashboard() {
 		handleSubmit,
 		setValue,
 		formState: { errors },
+		reset,
 	} = useForm();
 
 	const [editModal, setEditModal] = useState({
@@ -76,6 +77,7 @@ export default function AdminDashboard() {
 			setCallApi((prev) => !prev);
 		}
 		setEditModal((prev) => ({ ...prev, open: false }));
+		reset();
 	};
 
 	const formSubmit = async (data: any) => {
@@ -125,7 +127,11 @@ export default function AdminDashboard() {
 
 	return (
 		<div className='grid gap-4 '>
-			<Dialog open={editModal.open} onOpenChange={(data) => setEditModal((prev) => ({ ...prev, open: data }))}>
+			<Dialog
+				open={editModal.open}
+				onOpenChange={(data: boolean) =>
+					data ? setEditModal((prev) => ({ ...prev, open: data })) : closeModal({ status: false })
+				}>
 				<DialogContent
 					className='md:max-w-[555px]'
 					onPointerDownOutside={(e) => {

@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import { ToggleButton } from '@/components/ui/toggle-theme';
 import LogoutButton from '@/components/ui/logout';

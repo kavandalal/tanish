@@ -23,7 +23,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { postID: st
 
 		await connectMongoDB();
 		const postData = await Post.findById(postRef);
-		if (middlewareSet?.userRef !== postData.createdBy && middlewareSet?.role !== 'admin')
+		if (middlewareSet?.userRef != postData.createdBy && middlewareSet?.role !== 'admin')
 			throw new BadRequestError('You cannot edit the post!!!');
 
 		const packet = await Post.findOneAndUpdate({ _id: postRef }, data, { new: true });
@@ -50,7 +50,8 @@ export async function DELETE(req: any, { params }: { params: { postID: string } 
 		await connectMongoDB();
 
 		const postData = await Post.findById(postRef);
-		if (middlewareSet?.userRef !== postData.createdBy) throw new BadRequestError('You cannot delete the post!!!');
+		if (middlewareSet?.userRef != postData.createdBy && middlewareSet?.role !== 'admin')
+			throw new BadRequestError('You cannot delete the post!!!');
 
 		let packet = await Post.findOneAndDelete({ _id: postRef });
 		if (!packet) throw new BadRequestError('Event does not exists!!!');

@@ -4,13 +4,9 @@ import { inputStyle, labelStyle } from '@/components/constant';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import PostExplore from '@/components/ui/post-explore';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useToast } from '@/components/ui/use-toast';
-import eventType from '@/model/event.types';
 import postType from '@/model/post.types';
 import axios from 'axios';
-import { PenIcon, Trash, User } from 'lucide-react';
-import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
@@ -140,7 +136,7 @@ export default function AdminDashboard() {
 		}
 	};
 
-	const deleteModal = async ({ id }: { id: String }) => {
+	const deleteModal = useCallback(async ({ id }: { id: String }) => {
 		try {
 			const packet = await axios.delete(`/api/post/action/${id}`);
 
@@ -161,7 +157,7 @@ export default function AdminDashboard() {
 			toast({ variant: 'destructive', title: errMsg });
 			return false;
 		}
-	};
+	}, []);
 
 	return (
 		<div className='grid gap-4 '>
@@ -220,7 +216,7 @@ export default function AdminDashboard() {
 					<div className='grid grid-cols-3 gap-1'>
 						{postData?.list?.length > 0 &&
 							postData?.list?.map((post: postType) => (
-								<PostExplore data={post} openModal={openModal} key={1} editable />
+								<PostExplore data={post} openModal={openModal} key={post?._id} editable deleteHandle={deleteModal} />
 							))}
 						{/* {postData?.list?.length > 0 &&
 							postData?.list?.map((post: postType) => <PostExplore data={post} openModal={openModal} key={2} />)}
