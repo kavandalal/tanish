@@ -94,12 +94,12 @@ export default function Home() {
 									<div className='relative'>
 										<input
 											type='email'
-											// {...register('email', {
-											// 	validate: (email) => {
-											// 		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-											// 		return emailRegex.test(email);
-											// 	},
-											// })}
+											{...register('email', {
+												validate: (email) => {
+													const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+													return emailRegex.test(email);
+												},
+											})}
 											placeholder='Email'
 											className={inputStyle}
 										/>

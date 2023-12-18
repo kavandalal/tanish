@@ -25,7 +25,7 @@ const signJWT = async (payload: { userRef: string; role: string }, options: { ex
 		throw error;
 	}
 };
-type login = { phone: string; email: string };
+type login = { phone?: string; email?: string };
 
 export async function POST(req: NextRequest) {
 	let data: login = await req.json();
@@ -58,7 +58,7 @@ export async function POST(req: NextRequest) {
 }
 
 const validatePOST = async (body: login) => {
-	if (!body.email && !body.phone) throw new BadRequestError('Phone or Email is required');
+	if (!body.email && !body.phone) throw new BadRequestError('Either Email or Phone number is required');
 
 	return body;
 };
