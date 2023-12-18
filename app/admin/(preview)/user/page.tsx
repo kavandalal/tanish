@@ -9,7 +9,7 @@ import userType from '@/model/user.types';
 import axios from 'axios';
 import { PenIcon, Trash, User } from 'lucide-react';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 export default function AdminDashboard() {
@@ -33,11 +33,7 @@ export default function AdminDashboard() {
 	const [callApi, setCallApi] = useState(false);
 	const [userList, setUserList] = useState([]);
 
-	useEffect(() => {
-		getUserList();
-	}, [callApi]);
-
-	const getUserList = async () => {
+	const getUserList = useCallback(async () => {
 		try {
 			const packet = await axios.get('/api/user');
 
@@ -57,7 +53,11 @@ export default function AdminDashboard() {
 			toast({ variant: 'destructive', title: errMsg || 'Something went wrong' });
 			return false;
 		}
-	};
+	}, []);
+
+	useEffect(() => {
+		getUserList();
+	}, [callApi, getUserList]);
 
 	const openModal = ({ mode = 'add', id = '', data }: { mode?: string; id?: string; data?: userType } = {}) => {
 		setEditModal((prev) => ({ ...prev, open: true, mode, id }));
@@ -210,7 +210,7 @@ export default function AdminDashboard() {
 						<TableBody>
 							{userList?.length > 0 &&
 								userList?.map((row: userType, index) => (
-									<TableRow>
+									<TableRow key={row?._id}>
 										<TableCell>{index + 1} </TableCell>
 										<TableCell>
 											<Link href={`/profile/${row?._id}` as string} target='_blank'>

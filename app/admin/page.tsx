@@ -2,16 +2,16 @@
 
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 
 export default function AdminDashboard() {
 	const router = useRouter();
 
-	useEffect(() => {
-		toAdminHomePage();
+	const toAdminHomePage = useCallback(() => {
+		router.push('/admin/post');
 	}, []);
 
-	const toAdminHomePage = () => {
-		router.push('/admin/post');
-	};
+	useEffect(() => {
+		toAdminHomePage();
+	}, [toAdminHomePage]);
 }

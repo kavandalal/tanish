@@ -32,17 +32,7 @@ export default function AdminDashboard() {
 	const [eventList, setEventList] = useState([]);
 	const [eventRef, setEventRef] = useState('');
 
-	useEffect(() => {
-		if (eventRef) {
-			getPostList({ eventRef });
-		}
-	}, [callApi, eventRef]);
-
-	useEffect(() => {
-		getEventList();
-	}, []);
-
-	const getEventList = async () => {
+	const getEventList = useCallback(async () => {
 		try {
 			const packet = await axios.get('/api/event?isPrivate=true');
 
@@ -62,9 +52,8 @@ export default function AdminDashboard() {
 			toast({ variant: 'destructive', title: errMsg || 'Something went wrong' });
 			return false;
 		}
-	};
-
-	const getPostList = async ({ eventRef, page }: { eventRef: string; page?: number }) => {
+	}, []);
+	const getPostList = useCallback(async ({ eventRef, page }: { eventRef: string; page?: number }) => {
 		try {
 			const res = await axios.get(`/api/post/${eventRef}?page=${page || 1}`);
 
@@ -92,7 +81,17 @@ export default function AdminDashboard() {
 			toast({ variant: 'destructive', title: errMsg || 'Something went wrong' });
 			return false;
 		}
-	};
+	}, []);
+
+	useEffect(() => {
+		if (eventRef) {
+			getPostList({ eventRef });
+		}
+	}, [callApi, eventRef, getPostList]);
+
+	useEffect(() => {
+		getEventList();
+	}, [getEventList]);
 
 	const openModal = useCallback(
 		({ mode = 'add', id = '', data }: { mode?: string; id?: string; data?: postType } = {}) => {
@@ -104,7 +103,7 @@ export default function AdminDashboard() {
 				setValue('eventRef', data?.eventRef);
 			}
 		},
-		[]
+		[setValue]
 	);
 
 	const closeModal = ({ status = false }: { status: boolean }) => {

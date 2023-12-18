@@ -2,7 +2,7 @@
 
 import { useToast } from '@/components/ui/use-toast';
 import axios from 'axios';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 export default function Feed() {
 	const { toast } = useToast();
@@ -11,11 +11,7 @@ export default function Feed() {
 	const [eventList, setEventList] = useState([]);
 	const [postList, setPostList] = useState([]);
 
-	useEffect(() => {
-		getEventList();
-	}, []);
-
-	const getEventList = async () => {
+	const getEventList = useCallback(async () => {
 		try {
 			const packet = await axios.get('/api/event');
 
@@ -37,7 +33,11 @@ export default function Feed() {
 			toast({ variant: 'destructive', title: errMsg || 'Something went wrong' });
 			return false;
 		}
-	};
+	}, []);
+
+	useEffect(() => {
+		getEventList();
+	}, [getEventList]);
 
 	const getPostFromEvent = async (eventRef: string) => {
 		try {

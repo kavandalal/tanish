@@ -3,7 +3,7 @@
 import { useToast } from '@/components/ui/use-toast';
 import axios from 'axios';
 import { useForm } from 'react-hook-form';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { inputStyle, labelStyle } from '@/components/constant';
 import event from '@/model/event.types';
 
@@ -20,11 +20,7 @@ export default function Upload() {
 	const [eventRef, setEventRef] = useState('');
 	const [eventList, setEventList] = useState([]);
 
-	useEffect(() => {
-		getEventList();
-	}, []);
-
-	const getEventList = async () => {
+	const getEventList = useCallback(async () => {
 		try {
 			const packet = await axios.get('/api/event');
 
@@ -43,7 +39,11 @@ export default function Upload() {
 			toast({ variant: 'destructive', title: errMsg || 'Something went wrong' });
 			return false;
 		}
-	};
+	}, []);
+
+	useEffect(() => {
+		getEventList();
+	}, [getEventList]);
 
 	const formSubmit = async (data: any) => {
 		const sendData = data;

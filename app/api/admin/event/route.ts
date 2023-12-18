@@ -1,12 +1,11 @@
+import BadRequestError from '@/error-handler/bad-request';
+import CustomError from '@/error-handler/custom-error';
+import ErrorHandler from '@/error-handler/error-handler';
 import connectMongoDB from '@/lib/mongodb';
+import { checkMongooseRef } from '@/lib/server-helper';
 import Event from '@/model/event';
 import eventType from '@/model/event.types';
 import { NextResponse } from 'next/server';
-import BadRequestError from '@/error-handler/bad-request';
-import ErrorHandler from '@/error-handler/error-handler';
-import CustomError from '@/error-handler/custom-error';
-import InternalServerError from '@/error-handler/internal-server';
-import { checkMongooseRef } from '@/lib/server-helper';
 
 export async function POST(req: Request) {
 	const data: eventType = await req.json();
