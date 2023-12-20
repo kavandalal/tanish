@@ -15,6 +15,7 @@ export default function Upload() {
 		handleSubmit,
 		setValue,
 		formState: { errors },
+		reset,
 	} = useForm();
 
 	const [eventRef, setEventRef] = useState('');
@@ -55,6 +56,7 @@ export default function Upload() {
 				return false;
 			}
 
+			reset();
 			toast({ description: 'Successfully uploaded the photo' });
 			return true;
 		} catch (err: any) {

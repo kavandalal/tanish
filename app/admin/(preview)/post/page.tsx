@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import PostExplore from '@/components/ui/post-explore';
 import { useToast } from '@/components/ui/use-toast';
+import eventType from '@/model/event.types';
 import postType from '@/model/post.types';
 import axios from 'axios';
 import { useCallback, useEffect, useState } from 'react';
@@ -160,7 +161,11 @@ export default function AdminDashboard() {
 
 	return (
 		<div className='grid gap-4 '>
-			<Dialog open={editModal.open} onOpenChange={(data) => setEditModal((prev) => ({ ...prev, open: data }))}>
+			<Dialog
+				open={editModal.open}
+				onOpenChange={(data) =>
+					data ? setEditModal((prev) => ({ ...prev, open: data })) : closeModal({ status: false })
+				}>
 				<DialogContent
 					className='md:max-w-[555px]'
 					onPointerDownOutside={(e) => {
@@ -177,15 +182,16 @@ export default function AdminDashboard() {
 							</div>
 
 							<div className='relative'>
-								{/* <select {...register('eventRef')} className={inputStyle} placeholder='Post belong to event'>
+								<select {...register('eventRef')} className={inputStyle} placeholder='Photo belong to event'>
 									<option value={''}>Select</option>
+
 									{eventList?.length > 0 &&
 										eventList?.map((i: eventType) => (
-											<option key={i?._id} value={i?._id}>
+											<option key={i?._id as ''} value={i?._id as ''}>
 												{i?.name}
 											</option>
 										))}
-								</select> */}
+								</select>
 								<label className={labelStyle}>Post belong to event</label>
 							</div>
 						</div>

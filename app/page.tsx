@@ -2,7 +2,7 @@
 
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import axios from 'axios';
 import { useToast } from '@/components/ui/use-toast';
@@ -12,6 +12,8 @@ import { inputStyle, labelStyle } from '@/components/constant';
 export default function Home() {
 	const { toast } = useToast();
 	const router = useRouter();
+	const searchParams = useSearchParams();
+
 	const {
 		register,
 		watch,
@@ -26,13 +28,18 @@ export default function Home() {
 	}, []);
 
 	const toHomePage = () => {
-		router.push('/feed');
+		const redirect = searchParams.get('redirect');
+
+		router.push(redirect || '/feed');
 	};
 	const toAdminHomePage = () => {
 		router.push('/admin/');
 	};
 
-	const formSubmit = async (data: any) => {
+	const formSubmit = async (data: any, e: any) => {
+		e?.preventDefault();
+		console.log('form getting triggered');
+
 		const sendData = {
 			...data,
 			name: data?.name
@@ -61,6 +68,7 @@ export default function Home() {
 			}
 
 			toast({ description: 'Successfully loggedin' });
+
 			toHomePage();
 			return true;
 		} catch (err: any) {
@@ -105,7 +113,7 @@ export default function Home() {
 										/>
 										<label className={labelStyle}>Email</label>
 									</div>
-									<div className='flex justify-center text-success'>
+									{/* <div className='flex justify-center text-foreground'>
 										<span>OR</span>
 									</div>
 
@@ -118,13 +126,8 @@ export default function Home() {
 										/>
 										<label className={labelStyle}>Phone Number</label>
 										{errors.phone && <p className='text-estructive'>Phone Number is required.</p>}
-									</div>
+									</div> */}
 
-									{/* <input
-									className='btn mx-auto w-56 text-lg hover:cursor-pointer rounded text-white bg-gradient-to-r from-green-400 to-blue-500 hover:from-pink-500 hover:to-yellow-500 '
-									
-									value='Enter Event'
-								/> */}
 									<button
 										type='submit'
 										className='w-full mt-6 py-4 text-lg text-white font-semibold text-center rounded-full bg-purple-500 transition-all hover:bg-purple-600 focus:outline-none'>

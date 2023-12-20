@@ -14,14 +14,14 @@ export const verifyJWT = async <T>(token: string): Promise<T> => {
 	}
 };
 
-// const appPages = ['/feed', '/explore', '/upload', '/timeline', '/profile'];
+const appPages = ['/feed', '/explore', '/upload', '/timeline', '/profile'];
 
-// const isAppRoute = (url: string) => {
-// 	for (let i of appPages) {
-// 		if (url?.includes(i)) return true;
-// 	}
-// 	return false;
-// };
+const isAppRoute = (url: string) => {
+	for (let i of appPages) {
+		if (url?.includes(i)) return true;
+	}
+	return false;
+};
 
 const isAdminRoute = (url: string) => {
 	return url.includes('/admin');
@@ -35,8 +35,10 @@ export async function middleware(request: NextRequest) {
 		let cookie = request.cookies.get(tokenName);
 		const secret = process.env.JWT_SECRET;
 
+		const goToURL = request?.nextUrl?.pathname;
+		const redirect = goToURL ? `?redirect=${goToURL}` : '';
 		if (!cookie || !cookie?.value) {
-			return NextResponse.redirect(new URL('/', request.url));
+			return NextResponse.redirect(new URL(`/${redirect}`, request.url));
 		}
 
 		let isValid: { role: string; userRef: string };
@@ -45,12 +47,11 @@ export async function middleware(request: NextRequest) {
 		}
 
 		isValid = await verifyJWT(cookie.value);
-		// console.log('is admin-route', isAdminroute, ',, role =', isValid?.role);
 
 		const requestHeaders = new Headers(request.headers);
 		requestHeaders.set('token-decode', JSON.stringify(isValid));
 
-		const isProfilePage = request?.nextUrl?.pathname === '/profile';
+		const isProfilePage = goToURL === '/profile';
 		if (isProfilePage) {
 			return NextResponse.redirect(new URL(`/profile/${isValid?.userRef}`, request.url));
 		}
@@ -75,12 +76,19 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
 	matcher: [
+		// APP PAGES
+		'/feed',
+		'/explore',
+		'/upload',
+		'/timeline',
 		'/profile',
+		// API ROUTES
 		'/api/user/:path*',
 		'/api/event/:path*',
 		'/api/post/:path*',
 		'/api/admin/user/:path*',
 		'/api/admin/:path*',
+		// ADMIN PAGES
 		'/admin/:path*',
 	],
 };
