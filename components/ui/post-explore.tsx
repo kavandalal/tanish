@@ -17,8 +17,8 @@ import Image from 'next/image';
 type PostExplore = {
 	data: postType;
 	editable: boolean;
-	openModal: ({ mode, id, data }: { mode?: string; id?: string; data?: postType }) => void;
-	deleteHandle: ({ id }: { id: string }) => void;
+	openModal?: ({ mode, id, data }: { mode?: string; id?: string; data?: postType }) => void;
+	deleteHandle?: ({ id }: { id: string }) => void;
 };
 
 function PostExplore({ data, openModal, editable, deleteHandle }: PostExplore) {
@@ -53,7 +53,7 @@ function PostExplore({ data, openModal, editable, deleteHandle }: PostExplore) {
 								<DropdownMenuItem
 									className='ps-4'
 									onClick={() => {
-										openModal({ mode: 'edit', id: data?._id, data });
+										openModal && openModal({ mode: 'edit', id: data?._id, data });
 									}}>
 									<PenIcon size={16} className='text-blue-500 me-3' />
 									Edit
@@ -65,7 +65,7 @@ function PostExplore({ data, openModal, editable, deleteHandle }: PostExplore) {
 										toast({
 											title: `Delete Image`,
 											description: 'Once image is deleted you wont be able reverse',
-											action: <Button onClick={() => deleteHandle({ id: data?._id })}>Delete</Button>,
+											action: <Button onClick={() => deleteHandle && deleteHandle({ id: data?._id })}>Delete</Button>,
 										});
 									}}>
 									<Trash size={16} className='text-destructive me-3' />

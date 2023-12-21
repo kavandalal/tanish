@@ -1,21 +1,15 @@
 'use client';
 
-import 'react-vertical-timeline-component/style.min.css';
 import { VerticalTimeline, VerticalTimelineElement } from 'react-vertical-timeline-component';
+import 'react-vertical-timeline-component/style.min.css';
 
-import { inputStyle, labelStyle } from '@/components/constant';
-import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { ToastAction } from '@/components/ui/toast';
 import { useToast } from '@/components/ui/use-toast';
 import eventType from '@/model/event.types';
 import axios from 'axios';
-import { CircleDot, MapPin, PenIcon, Trash, WorkflowIcon } from 'lucide-react';
+import { CircleDot, MapPin } from 'lucide-react';
 import moment from 'moment-timezone';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
 
 // import dynamic from 'next/dynamic';
 // const { VerticalTimeline , VerticalTimelineElement}  = dynamic(() => import('react-vertical-timeline-component'), { ssr: false });
@@ -68,7 +62,7 @@ export default function Timeline() {
 							eventList?.map((event: eventType, index) => (
 								<VerticalTimelineElement
 									key={index}
-									className='vertical-timeline-element--work'
+									className='vertical-timeline-element--work text-black'
 									// contentStyle={{ background: 'rgb(33, 150, 243)', color: '#fff' }}
 									contentArrowStyle={{ borderRight: '7px solid  rgb(33, 150, 243)' }}
 									date={`${moment.tz(event?.start, 'Asia/Kolkata')?.format('lll')}${
@@ -92,11 +86,11 @@ export default function Timeline() {
 									{event?.address && <p>{event?.address}</p>}
 									{event?.description && <p>{event?.description}</p>}
 									{event?.map && (
-										<p className='flex justify-start'>
+										<p className='flex justify-start '>
 											<Link
 												href={event?.map as string}
 												target='_blank'
-												className='flex bg-blue-100 p-2 rounded-lg border bottom-2 text-sm'>
+												className='flex bg-blue-100 p-2 rounded-lg border border-black bottom-2 text-sm'>
 												<MapPin size={20} className='me-3' /> Google Map
 											</Link>
 										</p>

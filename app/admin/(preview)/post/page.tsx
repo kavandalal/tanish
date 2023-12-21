@@ -56,7 +56,7 @@ export default function AdminDashboard() {
 	}, []);
 	const getPostList = useCallback(async ({ eventRef, page }: { eventRef: string; page?: number }) => {
 		try {
-			const res = await axios.get(`/api/post/${eventRef}?page=${page || 1}`);
+			const res = await axios.get(`/api/post/event/${eventRef}?page=${page || 1}`);
 
 			if (!res?.data?.ok) {
 				toast({
@@ -206,7 +206,7 @@ export default function AdminDashboard() {
 
 			<div className='container'>
 				<div className='flex justify-between my-6'>
-					<h4 className='font-bold text-2xl'>Post</h4>
+					<h4 className='font-bold text-2xl'>Admin &gt; Post</h4>
 					<div>
 						{/* <select name='' id='' defaultValue={eventRef}>
 							{eventList?.map((event: eventType) => (

@@ -10,7 +10,7 @@ export default function Header() {
 			className='justify-between w-full flex items-center sticky top-0 bg-[hsl(var(--background))] z-50'
 			style={{ boxShadow: '0 -10px 16px hsl(var(--foreground))' }}>
 			<div className='container justify-between w-full flex items-center   '>
-				<div>Logo</div>
+				<div className='gradient-text font-bold'>#TheTanishWedding</div>
 				<div>
 					<ToggleButton />
 					<LogoutButton />

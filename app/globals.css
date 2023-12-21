@@ -146,3 +146,10 @@ input[type='checkbox'] {
 	transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 	transition-duration: 150ms;
 }
+
+.gradient-text {
+	/* font-size: 72px; */
+	background: -webkit-linear-gradient(rgb(161, 161, 169), rgb(62, 62, 244));
+	-webkit-background-clip: text;
+	-webkit-text-fill-color: transparent;
+}

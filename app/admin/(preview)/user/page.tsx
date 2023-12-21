@@ -190,7 +190,7 @@ export default function AdminDashboard() {
 			</Dialog>
 			<div className='container'>
 				<div className='flex justify-between my-6'>
-					<h4 className='font-bold text-2xl'>Users</h4>
+					<h4 className='font-bold text-2xl'>Admin &gt; Users</h4>
 					<div>{/* <Button >Add user</Button> */}</div>
 				</div>
 				<div>

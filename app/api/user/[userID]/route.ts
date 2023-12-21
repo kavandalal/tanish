@@ -7,6 +7,7 @@ import ErrorHandler from '@/error-handler/error-handler';
 import CustomError from '@/error-handler/custom-error';
 import type { NextApiRequest } from 'next';
 import { checkMongooseRef } from '@/lib/server-helper';
+import { headers } from 'next/headers';
 
 export async function GET(req: NextRequest, { params }: { params: { userID: string } }) {
 	try {
@@ -19,7 +20,14 @@ export async function GET(req: NextRequest, { params }: { params: { userID: stri
 		let packet = await User.findOne({ _id: userRef });
 		if (!packet) throw new BadRequestError('User does not exists!!!');
 
-		return NextResponse.json({ ok: true, packet });
+		let isOwner = false;
+		const headersList = headers();
+		const middlewareSet = JSON.parse(headersList.get('token-decode') || '');
+		if (middlewareSet?.userRef == packet._id) {
+			isOwner = true;
+		}
+
+		return NextResponse.json({ ok: true, packet: { data: packet, isOwner } });
 	} catch (err) {
 		if (err instanceof CustomError) {
 			return ErrorHandler(err);

@@ -264,7 +264,7 @@ export default function AdminDashboard() {
 
 			<div className='container'>
 				<div className='flex justify-between my-6'>
-					<h4 className='font-bold text-2xl'>Events</h4>
+					<h4 className='font-bold text-2xl'>Admin &gt; Events</h4>
 					<div>
 						<Button onClick={() => openModal()}>Add Event</Button>
 					</div>
