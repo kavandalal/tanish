@@ -34,7 +34,8 @@ export const NavItem = ({ item }: { item: routeType }) => {
 
 	const pathname = usePathname();
 	const { slug, url, name } = item;
-	const isActive = url === pathname;
+
+	const isActive = pathname?.includes(url);
 	const Icon = getIcon({ name: slug });
 
 	return (
@@ -45,11 +46,11 @@ export const NavItem = ({ item }: { item: routeType }) => {
 				'h-full w-full rounded-none cursor-pointer bg-[hsl(var(--background))] hover:bg-[hsl(var(--secondary))] ',
 				{
 					'text-[hsl(var(--muted-foreground))] ': !isActive,
-					'text-[hsl(var(--foreground))]': isActive,
+					'text-blue-800': isActive,
 				}
 			)}>
 			<div className='h-full w-full flex justify-center items-center'>
-				<span className='hidden  '>{item.name}</span>
+				<span className='hidden sr-only'>{item.name}</span>
 				{Icon && <Icon height={iconSize} width={iconSize} />}
 			</div>
 		</Link>
