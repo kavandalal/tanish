@@ -10,11 +10,11 @@ export async function GET(req: NextRequest, { params }: { params: { postID: stri
 	try {
 		const postRef = params.postID;
 		if (!postRef) throw new BadRequestError('Post ID is required');
-		if (!checkMongooseRef(postRef)) throw new BadRequestError('Post ID is not valid!!!');
+		if (!checkMongooseRef(postRef)) return NextResponse.redirect(new URL(`/feed/`, req.url));
 
 		await connectMongoDB();
 
-		let packet = await Post.findById({ _id: postRef });
+		let packet = await Post.findById({ _id: postRef }).populate('createdBy likes');
 
 		return NextResponse.json({ ok: true, packet });
 	} catch (err) {

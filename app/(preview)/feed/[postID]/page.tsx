@@ -1,60 +1,51 @@
 'use client';
 
+import PostFeed from '@/components/ui/post-feed';
 import { useToast } from '@/components/ui/use-toast';
+import userType from '@/model/user.types';
+import postType from '@/model/post.types';
 import axios from 'axios';
-import { useCallback, useEffect, useState } from 'react';
+import { usePathname } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 export default function Feed() {
 	const { toast } = useToast();
+	const pathname = usePathname();
 
-	const [eventRef, setEventRef] = useState('');
-	const [eventList, setEventList] = useState([]);
-	const [postList, setPostList] = useState([]);
-
-	const getEventList = useCallback(async () => {
-		try {
-			const packet = await axios.get('/api/event');
-
-			if (!packet?.data?.ok) {
-				toast({
-					variant: 'destructive',
-					title: packet?.data?.errors?.[0]?.message,
-				});
-				return false;
-			}
-			setEventList(packet?.data?.packet?.list);
-			setEventRef(packet?.data?.packet?.default);
-			// toast({ description: 'Successfully logged out' });
-			getPostFromEvent(packet?.data?.packet?.default);
-			return true;
-		} catch (err: any) {
-			const errMsg = err?.response?.data?.errors?.[0]?.message;
-			console.error(errMsg);
-			toast({ variant: 'destructive', title: errMsg || 'Something went wrong' });
-			return false;
-		}
-	}, []);
+	const [currentState, setCurrentState] = useState('false');
+	const [postData, setPostData] = useState<postType & { createdBy: userType } & { likes?: [userType] }>();
 
 	useEffect(() => {
-		getEventList();
-	}, [getEventList]);
+		getInitData();
+	}, []);
 
-	const getPostFromEvent = async (eventRef: string) => {
+	const getInitData = async () => {
+		if (!pathname) return false;
+		const list = typeof pathname === 'string' ? pathname?.split('/') : [];
+		const postID = list?.length > 0 && list?.[list.length - 1];
+		if (postID) {
+			setCurrentState('loading');
+			await getPostData(postID);
+			setCurrentState('true');
+		}
+	};
+
+	const getPostData = async (postRef: string) => {
 		try {
-			if (!eventRef) return false;
+			if (!postRef) return false;
 
-			const packet = await axios.get(`/api/post/event/${eventRef}`);
+			const result = await axios.get(`/api/post/${postRef}`);
 
-			if (!packet?.data?.ok) {
+			if (!result?.data?.ok) {
 				toast({
 					variant: 'destructive',
-					title: packet?.data?.errors?.[0]?.message,
+					title: result?.data?.errors?.[0]?.message,
 				});
 				return false;
 			}
 
-			const { list, total, page, limit } = packet?.data?.packet;
-			setPostList(list);
+			const packet = result?.data?.packet;
+			setPostData(packet);
 
 			return true;
 		} catch (err: any) {
@@ -66,18 +57,11 @@ export default function Feed() {
 	};
 
 	return (
-		<div className='grid gap-4 '>
-			<div className='flex justify-between'></div>
-			<b>Feed</b>
-			<div>This page will have : </div>
-			<ul>
-				<li>filter to see all the events</li>
-				<li>filter of newest/top liked photos in Ascending/Descending</li>
-			</ul>
-			<div>
-				Each post will have download, like, comment, the name of the person who uploaded the photo, the person can write
-				caption while uploading the photo, timestamp
+		<div className='grid container '>
+			<div className='my-6 flex justify-between'>
+				<h4 className='font-bold text-2xl'>Post </h4>
 			</div>
+			<div>{postData && <PostFeed data={postData} />}</div>
 		</div>
 	);
 }

@@ -1,15 +1,21 @@
 'use client';
 
+import PostFeed from '@/components/ui/post-feed';
 import { useToast } from '@/components/ui/use-toast';
+import eventType from '@/model/event.types';
+import postType from '@/model/post.types';
+import userType from '@/model/user.types';
 import axios from 'axios';
 import { useCallback, useEffect, useState } from 'react';
 
 export default function Feed() {
 	const { toast } = useToast();
 
+	const [currentState, setCurrentState] = useState('false');
+
 	const [eventRef, setEventRef] = useState('');
 	const [eventList, setEventList] = useState([]);
-	const [postList, setPostList] = useState([]);
+	const [postList, setPostList] = useState<[postType & { createdBy: userType }]>();
 
 	const getEventList = useCallback(async () => {
 		try {
@@ -25,7 +31,7 @@ export default function Feed() {
 			setEventList(packet?.data?.packet?.list);
 			setEventRef(packet?.data?.packet?.default);
 			// toast({ description: 'Successfully logged out' });
-			getPostFromEvent(packet?.data?.packet?.default);
+			// getPostFromEvent(packet?.data?.packet?.default);
 			return true;
 		} catch (err: any) {
 			const errMsg = err?.response?.data?.errors?.[0]?.message;
@@ -35,11 +41,7 @@ export default function Feed() {
 		}
 	}, []);
 
-	useEffect(() => {
-		getEventList();
-	}, [getEventList]);
-
-	const getPostFromEvent = async (eventRef: string) => {
+	const getPostFromEvent = useCallback(async (eventRef: string) => {
 		try {
 			if (!eventRef) return false;
 
@@ -63,20 +65,42 @@ export default function Feed() {
 			toast({ variant: 'destructive', title: errMsg || 'Something went wrong' });
 			return false;
 		}
+	}, []);
+
+	useEffect(() => {
+		getEventList();
+	}, [getEventList]);
+
+	useEffect(() => {
+		if (eventRef) {
+			getPostFromEvent(eventRef);
+		}
+	}, [eventRef, getPostFromEvent]);
+
+	const eventChange = (e: any) => {
+		const { value } = e?.target;
+		setEventRef(value);
 	};
 
 	return (
-		<div className='grid gap-4 '>
-			<div className='flex justify-between'></div>
-			<b>Feed</b>
-			<div>This page will have : </div>
-			<ul>
-				<li>filter to see all the events</li>
-				<li>filter of newest/top liked photos in Ascending/Descending</li>
-			</ul>
-			<div>
-				Each post will have download, like, comment, the name of the person who uploaded the photo, the person can write
-				caption while uploading the photo, timestamp
+		<div className='grid  '>
+			<div className='container'>
+				<div className='my-6 flex justify-between'>
+					<h4 className='font-bold text-2xl'>Feed </h4>
+					<div>
+						<select onChange={eventChange} defaultValue={eventRef}>
+							{eventList?.map((event: eventType) => (
+								<option value={event?._id as ''} key={event?._id as ''}>
+									{event?.name}
+								</option>
+							))}
+						</select>
+					</div>
+				</div>
+			</div>
+			<div className='grid grid-cols-1 md:grid-cols-3 md:gap-2 '>
+				{Array.isArray(postList) &&
+					postList?.map((post: postType & { createdBy: userType }) => <PostFeed data={post} />)}
 			</div>
 		</div>
 	);

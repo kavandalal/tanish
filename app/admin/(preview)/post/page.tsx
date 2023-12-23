@@ -54,6 +54,7 @@ export default function AdminDashboard() {
 			return false;
 		}
 	}, []);
+
 	const getPostList = useCallback(async ({ eventRef, page }: { eventRef: string; page?: number }) => {
 		try {
 			const res = await axios.get(`/api/post/event/${eventRef}?page=${page || 1}`);
@@ -159,6 +160,11 @@ export default function AdminDashboard() {
 		}
 	}, []);
 
+	const eventChange = (e: any) => {
+		const { value } = e?.target;
+		setEventRef(value);
+	};
+
 	return (
 		<div className='grid gap-4 '>
 			<Dialog
@@ -208,13 +214,13 @@ export default function AdminDashboard() {
 				<div className='flex justify-between my-6'>
 					<h4 className='font-bold text-2xl'>Admin &gt; Post</h4>
 					<div>
-						{/* <select name='' id='' defaultValue={eventRef}>
+						<select onChange={eventChange} defaultValue={eventRef}>
 							{eventList?.map((event: eventType) => (
 								<option value={event?._id as ''} key={event?._id as ''}>
 									{event?.name}
 								</option>
 							))}
-						</select> */}
+						</select>
 					</div>
 				</div>
 				<div className='flex justify-center md:w-2/3 mx-auto'>

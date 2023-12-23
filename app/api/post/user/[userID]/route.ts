@@ -10,7 +10,7 @@ export async function GET(req: NextRequest, { params }: { params: { userID: stri
 	try {
 		const userRef = params.userID;
 		if (!userRef) throw new BadRequestError('User ID is required');
-		if (!checkMongooseRef(userRef)) throw new BadRequestError('User ID is not valid!!!');
+		if (!checkMongooseRef(userRef)) return NextResponse.redirect(new URL(`/profile`, req.url));
 
 		await connectMongoDB();
 

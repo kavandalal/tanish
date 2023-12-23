@@ -44,3 +44,35 @@ const validatePOST = async (body: postType) => {
 
 	return body;
 };
+
+export async function GET(req: NextRequest) {
+	try {
+		const searchParams = req.nextUrl.searchParams;
+		const page: number = Number(searchParams.get('page')) || 1;
+		let limit: number = Number(searchParams.get('limit')) || 15;
+		limit = limit > 15 ? 15 : limit;
+
+		// type filterQuery = 'new' | 'old' | 'liked';
+		let filterQuery: string = searchParams?.get('filter') || 'new';
+		const filter = { likes: -1 };
+		filter.likes = -1;
+
+		await connectMongoDB();
+
+		let list = await Post.find({})
+			.sort(filter as any)
+			.skip(limit * (page - 1))
+			.limit(limit)
+			.populate('createdBy');
+
+		let total = await Post.countDocuments({});
+
+		return NextResponse.json({ ok: true, packet: { list, total, page, limit } });
+	} catch (err) {
+		if (err instanceof CustomError) {
+			return ErrorHandler(err);
+		} else {
+			throw err;
+		}
+	}
+}
