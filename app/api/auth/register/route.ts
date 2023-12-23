@@ -35,16 +35,16 @@ export async function POST(req: NextRequest) {
 		await connectMongoDB();
 
 		let userExists = await User.findOne({ email: data.email });
-		let packet;
+		let user;
 		if (userExists) {
-			packet = userExists;
+			user = userExists;
 		} else {
-			packet = await User.create(data);
+			user = await User.create(data);
 		}
-		const token = await signJWT({ userRef: packet?._id, role: packet?.role || 'user' }, { exp: `20d` });
+		const token = await signJWT({ userRef: user?._id, role: user?.role || 'user' }, { exp: `20d` });
 		const tokenName = `token-${process.env.EVENT_NAME}`;
 
-		const response = NextResponse.json({ ok: true, packet });
+		const response = NextResponse.json({ ok: true, packet: { user } });
 		response.cookies.set(tokenName, token);
 		return response;
 	} catch (err) {

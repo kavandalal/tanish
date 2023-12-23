@@ -17,7 +17,7 @@ export async function GET(req: NextRequest, { params }: { params: { eventID: str
 		const searchParams = req.nextUrl.searchParams;
 		const page: number = Number(searchParams.get('page')) || 1;
 		let limit: number = Number(searchParams.get('limit')) || 15;
-		limit = limit > 15 ? 15 : limit;
+		limit = limit <= 15 ? limit : 15;
 
 		// type filterQuery = 'new' | 'old' | 'liked';
 		let filterQuery: string = searchParams?.get('filter') || 'new';

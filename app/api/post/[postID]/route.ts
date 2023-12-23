@@ -15,6 +15,8 @@ export async function GET(req: NextRequest, { params }: { params: { postID: stri
 		await connectMongoDB();
 
 		let packet = await Post.findById({ _id: postRef }).populate('createdBy likes');
+		// .populate({ path: 'createdBy', model: 'User' });
+		// .populate({ path: 'likes', model: 'User' });
 
 		return NextResponse.json({ ok: true, packet });
 	} catch (err) {

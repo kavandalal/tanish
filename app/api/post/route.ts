@@ -62,8 +62,8 @@ export async function GET(req: NextRequest) {
 		let list = await Post.find({})
 			.sort(filter as any)
 			.skip(limit * (page - 1))
-			.limit(limit)
-			.populate('createdBy');
+			.limit(limit);
+		// .populate('createdBy');
 
 		let total = await Post.countDocuments({});
 

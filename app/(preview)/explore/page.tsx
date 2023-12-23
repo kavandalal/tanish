@@ -48,8 +48,10 @@ export default function Explore() {
 			{/* <b>Explore</b>
 			<div>This page will have all the events top photos (Most Liked First from all the events)</div>
 			<div>Each row will have a square block and each row will have 3 photos</div> */}
-			<div className='my-6'>
-				<h4 className='font-bold text-2xl'>Explore </h4>
+			<div className='container'>
+				<div className='my-6'>
+					<h4 className='font-bold text-2xl'>Explore </h4>
+				</div>
 			</div>
 			<div className='grid grid-cols-3 md:grid-cols-6 gap-1 md:gap-2 '>
 				{Array.isArray(postList) &&

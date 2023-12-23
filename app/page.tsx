@@ -68,6 +68,7 @@ export default function Home() {
 			}
 
 			toast({ description: 'Successfully loggedin' });
+			localStorage.setItem('userID', packet?.data?.packet?.user?._id);
 
 			toHomePage();
 			return true;

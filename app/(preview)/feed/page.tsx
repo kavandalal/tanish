@@ -6,10 +6,14 @@ import eventType from '@/model/event.types';
 import postType from '@/model/post.types';
 import userType from '@/model/user.types';
 import axios from 'axios';
+import { usePathname, useSearchParams, useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 
 export default function Feed() {
 	const { toast } = useToast();
+	const router = useRouter();
+	const pathname = usePathname();
+	const searchParams = useSearchParams();
 
 	const [currentState, setCurrentState] = useState('false');
 
@@ -29,7 +33,9 @@ export default function Feed() {
 				return false;
 			}
 			setEventList(packet?.data?.packet?.list);
-			setEventRef(packet?.data?.packet?.default);
+
+			const current = searchParams.get('selected');
+			setEventRef(current || packet?.data?.packet?.default);
 			// toast({ description: 'Successfully logged out' });
 			// getPostFromEvent(packet?.data?.packet?.default);
 			return true;
@@ -77,9 +83,26 @@ export default function Feed() {
 		}
 	}, [eventRef, getPostFromEvent]);
 
-	const eventChange = (e: any) => {
-		const { value } = e?.target;
+	const onSelect = (event: any) => {
+		// now you got a read/write object
+		const current = new URLSearchParams(Array.from(searchParams.entries())); // -> has to use this form
+
+		// update as necessary
+		const value = event.target.value.trim();
 		setEventRef(value);
+
+		if (!value) {
+			current.delete('selected');
+		} else {
+			current.set('selected', value);
+		}
+
+		// cast to string
+		const search = current.toString();
+		// or const query = `${'?'.repeat(search.length && 1)}${search}`;
+		const query = search ? `?${search}` : '';
+
+		router.push(`${pathname}${query}`);
 	};
 
 	return (
@@ -88,7 +111,7 @@ export default function Feed() {
 				<div className='my-6 flex justify-between'>
 					<h4 className='font-bold text-2xl'>Feed </h4>
 					<div>
-						<select onChange={eventChange} defaultValue={eventRef}>
+						<select onChange={onSelect} value={eventRef}>
 							{eventList?.map((event: eventType) => (
 								<option value={event?._id as ''} key={event?._id as ''}>
 									{event?.name}

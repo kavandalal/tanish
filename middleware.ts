@@ -77,11 +77,11 @@ export async function middleware(request: NextRequest) {
 export const config = {
 	matcher: [
 		// APP PAGES
-		'/feed',
+		'/feed/:path*',
 		'/explore',
 		'/upload',
 		'/timeline',
-		'/profile',
+		'/profile/:path*',
 		// API ROUTES
 		'/api/user/:path*',
 		'/api/event/:path*',
