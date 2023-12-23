@@ -112,18 +112,18 @@ input[type='checkbox'] {
 	background-color: hsl(var(--foreground)) !important;
 }
 .vertical-timeline-element-content {
-	box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px !important;
+	box-shadow: hsl(var(--foreground) / 0.3) 0px 7px 29px 0px !important;
 }
 
 .post-shadow {
 	box-shadow:
-		rgba(0, 0, 0, 0.1) 0px 5px 10px -3px,
-		rgba(0, 0, 0, 0.05) 0px 0px 0px -3px;
+		hsl(var(--foreground) / 0.1) 0px 5px 10px -3px,
+		hsl(var(--foreground) / 0.2) 0px 0px 0px -3px;
 }
 .post-shadow-2 {
 	box-shadow:
-		rgba(0, 0, 0, 0.1) 0px 5px 10px 6px,
-		rgba(0, 0, 0, 0.05) 0px 0px 0px 6px;
+		hsl(var(--foreground) / 0.1) 0px 5px 10px 6px,
+		hsl(var(--foreground) / 0.2) 0px 0px 0px 6px;
 }
 
 .input-style {
