@@ -160,7 +160,8 @@ input[type='checkbox'] {
 
 .gradient-text {
 	/* font-size: 72px; */
-	background: -webkit-linear-gradient(rgb(161, 161, 169), rgb(62, 62, 244));
+
+	background: -webkit-linear-gradient(rgb(161, 161, 169), rgb(37 99 235) /* rgb(62, 62, 244) */);
 	-webkit-background-clip: text;
 	-webkit-text-fill-color: transparent;
 }

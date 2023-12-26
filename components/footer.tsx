@@ -46,11 +46,11 @@ export const NavItem = ({ item }: { item: routeType }) => {
 				'h-full w-full rounded-none cursor-pointer bg-[hsl(var(--background))] hover:bg-[hsl(var(--secondary))] ',
 				{
 					'text-[hsl(var(--muted-foreground))] ': !isActive,
-					'text-blue-800': isActive,
+					'text-blue-600': isActive,
 				}
 			)}>
 			<div className='h-full w-full flex justify-center items-center'>
-				<span className='hidden sr-only'>{item.name}</span>
+				<span className='hidden sr-only '>{item.name}</span>
 				{Icon && <Icon height={iconSize} width={iconSize} />}
 			</div>
 		</Link>

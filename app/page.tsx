@@ -14,6 +14,7 @@ export default function Home() {
 	const router = useRouter();
 	const searchParams = useSearchParams();
 
+	const [currentState, setCurrentState] = useState('true');
 	const {
 		register,
 		watch,
@@ -29,15 +30,16 @@ export default function Home() {
 
 	const toHomePage = () => {
 		const redirect = searchParams.get('redirect');
-
 		router.push(redirect || '/feed');
 	};
+
 	const toAdminHomePage = () => {
 		router.push('/admin/');
 	};
 
 	const formSubmit = async (data: any, e: any) => {
 		e?.preventDefault();
+		setCurrentState('loading');
 		console.log('form getting triggered');
 
 		const sendData = {
@@ -77,6 +79,8 @@ export default function Home() {
 			console.error(errMsg);
 			toast({ variant: 'destructive', title: errMsg });
 			return false;
+		} finally {
+			setCurrentState('true');
 		}
 	};
 
@@ -131,6 +135,7 @@ export default function Home() {
 
 									<button
 										type='submit'
+										disabled={currentState === 'loading'}
 										className='w-full mt-6 py-4 text-lg text-white font-semibold text-center rounded-full bg-purple-500 transition-all hover:bg-purple-600 focus:outline-none'>
 										Enter
 									</button>
@@ -188,6 +193,7 @@ export default function Home() {
 							/> */}
 									<button
 										type='submit'
+										disabled={currentState === 'loading'}
 										className='w-full mt-6 py-4 text-lg text-white font-semibold text-center rounded-full bg-purple-500 transition-all hover:bg-purple-600 focus:outline-none'>
 										Enter
 									</button>
