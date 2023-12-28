@@ -16,6 +16,7 @@ import { Popover } from '@/components/ui/popover';
 import { PopoverContent, PopoverTrigger } from '@radix-ui/react-popover';
 import DropZone from '@/components/image-upload/drop-zone';
 import useUploadImageToS3 from '@/lib/hooks/useUploadImg';
+import { Progress } from '@/components/ui/progress';
 
 const filter = {
 	multiple: true,
@@ -50,6 +51,7 @@ export default function Upload() {
 		size: 0,
 		type: '',
 	});
+	const [progress, setProgress] = useState ( 0)
 
 	const getEventList = useCallback(async () => {
 		try {
@@ -179,16 +181,23 @@ export default function Upload() {
 
 	const executeUpload = async () => {
 		try {
-			for (let img of imagesHere) {
-				const imgSrc = await getPresigned(img);
-				console.log('executeUpload result ', imgSrc);
-				await formSubmit({ source: imgSrc, caption: getValues('caption'), eventRef: getValues('eventRef') });
+			if( !getValues('caption') ||  !getValues('eventRef')) { 
+				toast({ variant: 'destructive', title: 'Caption and event are required' });
+				return 
 			}
+			const totalLength = imagesHere.length
+			for (let [ index, img] of Object.entries(imagesHere)) {
+				const imgSrc = await getPresigned(img);
+				await formSubmit({ source: imgSrc, caption: getValues('caption'), eventRef: getValues('eventRef') });
+				setProgress( ( (Number(index) + 1) / totalLength ) * 100 )
+			}
+			reset();
+			clearImage();
 		} catch (err: any) {
 			toast({ variant: 'destructive', title: err?.message || defaultError });
 		} finally {
-			reset();
-			clearImage();
+			setProgress( 0 )
+			
 		}
 	};
 
@@ -337,7 +346,8 @@ export default function Upload() {
 								
 								value='Enter Event'
 							/> */}
-					<div className='flex justify-center'>
+					<div className='flex justify-center items-center flex-col'>
+						{ progress!== 0 &&   <Progress value={progress}  className='mb-2'/>  } 
 						<button
 							disabled={currentState === 'loading'}
 							type='button'
