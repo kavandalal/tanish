@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
 
 		await connectMongoDB();
 
-		let userExists = await User.findOne({ $or: [{ email: data.email }, { phone: data.phone }] });
+		let userExists = await User.findOne({ $or: [{ email: data.email }] });
 		let packet;
 		if (userExists) {
 			packet = { user: userExists, next: false };

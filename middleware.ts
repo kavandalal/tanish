@@ -51,7 +51,7 @@ export async function middleware(request: NextRequest) {
 		const requestHeaders = new Headers(request.headers);
 		requestHeaders.set('token-decode', JSON.stringify(isValid));
 
-		if ( goToURL === '/' && !!isValid?.role && cookie && !!cookie?.value ){ 
+		if ( goToURL === '/' && !!isValid?.role && cookie && !!cookie?.value && request.method !== 'GET'  ){ 
 			return NextResponse.redirect(new URL(`/feed`, request.url));
 		}
 
