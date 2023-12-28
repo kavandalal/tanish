@@ -6,3 +6,7 @@
 <!-- get domain (done hostinger)  -->
 <!-- make ec2 server -->
 <!-- add domain to server -->
+
+npm run build && git add . && git commit -m "build update" && git push origin main
+
+git pull origin main && pm2 restart all && pm2 logs
