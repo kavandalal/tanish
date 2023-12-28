@@ -12,7 +12,7 @@ export async function GET(req: NextRequest, { params }: { params: { eventID: str
 	try {
 		const eventRef = params.eventID;
 		if (!eventRef) throw new BadRequestError('Event ID is required');
-		if (!checkMongooseRef(eventRef)) throw new BadRequestError('Event ID is not valid!!!');
+		// if (!checkMongooseRef(eventRef)) throw new BadRequestError('Event ID is not valid!!!');
 
 		const searchParams = req.nextUrl.searchParams;
 		const page: number = Number(searchParams.get('page')) || 1;
@@ -32,13 +32,18 @@ export async function GET(req: NextRequest, { params }: { params: { eventID: str
 
 		await connectMongoDB();
 
-		let list = await Post.find({ eventRef })
+		let list, total
+		if (eventRef == 'all'){
+			list = await Post.find().sort('-createdAt').skip(limit * (page - 1)).limit(limit).populate('createdBy');
+			total = await Post.countDocuments
+		}else { 
+			list =  await Post.find({ eventRef })
 			.sort(filter as any)
 			.skip(limit * (page - 1))
 			.limit(limit)
 			.populate('createdBy');
-
-		let total = await Post.countDocuments({ eventRef });
+			total = await Post.countDocuments({ eventRef });
+		}
 
 		return NextResponse.json({ ok: true, packet: { list, total, page, limit } });
 	} catch (err) {

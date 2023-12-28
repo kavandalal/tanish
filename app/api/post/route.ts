@@ -65,17 +65,30 @@ export async function GET(req: NextRequest) {
 		limit = limit > 15 ? 15 : limit;
 
 		// type filterQuery = 'new' | 'old' | 'liked';
-		let filterQuery: string = searchParams?.get('filter') || 'new';
-		const filter = { likes: -1 };
-		filter.likes = -1;
+		// let filterQuery: string = searchParams?.get('filter') || 'new';
+		// const filter = { likes: -1 };
+		// filter.likes = -1;
 
 		await connectMongoDB();
 
-		let list = await Post.find({})
-			.sort(filter as any)
-			.skip(limit * (page - 1))
-			.limit(limit);
+		let list =await Post.aggregate([
+			{
+				$addFields: {
+					likesCount: { $size: "$likes" } 
+				}
+			},
+			{
+				$sort: { likesCount: -1 } 
+			},
+			{
+				$skip: limit * (page - 1) 
+			},
+			{
+				$limit: limit 
+			}
+		]);
 		// .populate('createdBy');
+		
 
 		let total = await Post.countDocuments({});
 

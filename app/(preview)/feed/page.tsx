@@ -116,6 +116,7 @@ export default function Feed() {
 					<h4 className='font-bold text-2xl'>Feed </h4>
 					<div>
 						<select onChange={onSelect} value={eventRef}>
+						<option value={'all'} > All </option>
 							{eventList?.map((event: eventType) => (
 								<option value={event?._id as ''} key={event?._id as ''}>
 									{event?.name}
