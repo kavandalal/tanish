@@ -29,7 +29,7 @@ const signJWT = async (payload: { userRef: string; role: string }, options: { ex
 export async function POST(req: NextRequest) {
 	let data: userType = await req.json();
 	try {
-		console.log('inside POST register');
+		console.log('POST register',data.email);
 		data = await validatePOST(data);
 
 		await connectMongoDB();
