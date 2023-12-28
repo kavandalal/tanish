@@ -20,7 +20,8 @@ export default function Feed() {
 
 	const [eventRef, setEventRef] = useState('');
 	const [eventList, setEventList] = useState([]);
-	const [postList, setPostList] = useState<[postType & { createdBy: userType }]>();
+	const [postList, setPostList] = useState<(postType & { createdBy: userType })[]>();
+	const [pagination,setPagination ] = useState({ total : 0, page : 1 , limit: 8}) 
 
 	const getEventList = useCallback(async () => {
 		try {
@@ -51,8 +52,9 @@ export default function Feed() {
 	const getPostFromEvent = useCallback(async (eventRef: string) => {
 		try {
 			if (!eventRef) return false;
+			if (pagination.page !== 1 && postList && postList?.length > pagination.total) return true
 
-			const packet = await axios.get(`/api/post/event/${eventRef}`);
+			const packet = await axios.get(`/api/post/event/${eventRef}?page=${pagination.page}&limit=${pagination.limit}`);
 
 			if (!packet?.data?.ok) {
 				toast({
@@ -63,7 +65,8 @@ export default function Feed() {
 			}
 
 			const { list, total, page, limit } = packet?.data?.packet;
-			setPostList(list);
+			setPostList(prev => pagination.page === 1  ?  list : [ ...(prev  ? prev : []) , ...list ]);
+			setPagination({ total , page ,limit })
 
 			return true;
 		} catch (err: any) {
@@ -72,7 +75,7 @@ export default function Feed() {
 			toast({ variant: 'destructive', title: errMsg || 'Something went wrong' });
 			return false;
 		}
-	}, []);
+	}, [pagination.page]);
 
 	useEffect(() => {
 		getEventList();
@@ -82,7 +85,7 @@ export default function Feed() {
 		if (eventRef) {
 			getPostFromEvent(eventRef);
 		}
-	}, [eventRef, getPostFromEvent]);
+	}, [eventRef, getPostFromEvent ,callApi]);
 
 	const onSelect = (event: any) => {
 		// now you got a read/write object
@@ -127,6 +130,15 @@ export default function Feed() {
 					postList?.map((post: postType & { createdBy: userType }) => (
 						<PostFeed data={post} key={post?._id} setCallApi={setCallApi} />
 					))}
+			</div>
+			<div className='flex justify-center items-center'>
+				{ postList && postList?.length < pagination?.total &&  <button
+							disabled={currentState === 'loading'}
+							type='button'
+							onClick={() => setPagination(prev => ({ ...prev ,page :prev.page +1  }) ) }
+							className='w-56 py-2 mb-3 text-white font-semibold text-center rounded-full bg-purple-500 transition-all hover:bg-purple-600 focus:outline-none'>
+							Show More
+						</button>} 
 			</div>
 		</div>
 	);

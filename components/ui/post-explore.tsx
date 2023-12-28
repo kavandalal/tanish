@@ -37,7 +37,7 @@ function PostExplore({ data, openModal, editable, deleteHandle }: PostExplore) {
 			<Image
 				width={200}
 				height={200}
-				className='object-contain w-full h-full'
+				className='object-cover w-full h-full'
 				src={`${S3BucketBaseUrl}${data?.source}`}
 				alt=''
 				priority

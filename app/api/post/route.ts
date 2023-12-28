@@ -66,7 +66,7 @@ export async function GET(req: NextRequest) {
 
 		// type filterQuery = 'new' | 'old' | 'liked';
 		let filterQuery: string = searchParams?.get('filter') || 'new';
-		const filter = { likes: -1 };
+		const filter = { likes: -1, createdAt: -1 };
 		filter.likes = -1;
 
 		await connectMongoDB();
