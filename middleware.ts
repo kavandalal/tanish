@@ -7,7 +7,7 @@ import InternalServerError from './error-handler/internal-server';
 
 export const verifyJWT = async <T>(token: string): Promise<T> => {
 	try {
-		return (await jwtVerify(token, new TextEncoder().encode(process.env.JWT_SECRET))).payload as T;
+		return  (await jwtVerify(token, new TextEncoder().encode(process.env.JWT_SECRET))).payload as T;
 	} catch (error) {
 		console.log(error);
 		throw new Unauthorized('Token is invalid!');
@@ -37,7 +37,7 @@ export async function middleware(request: NextRequest) {
 
 		const goToURL = request?.nextUrl?.pathname;
 		const redirect = goToURL ? `?redirect=${goToURL}` : '';
-		if (!cookie || !cookie?.value) {
+		if ((!cookie || !cookie?.value) && goToURL?.split('/')?.join('')) {
 			return NextResponse.redirect(new URL(`/${redirect}`, request.url));
 		}
 
@@ -50,6 +50,10 @@ export async function middleware(request: NextRequest) {
 
 		const requestHeaders = new Headers(request.headers);
 		requestHeaders.set('token-decode', JSON.stringify(isValid));
+
+		if ( goToURL === '/' && !!isValid?.role && cookie && !!cookie?.value ){ 
+			return NextResponse.redirect(new URL(`/feed`, request.url));
+		}
 
 		const isProfilePage = goToURL === '/profile';
 		if (isProfilePage) {
@@ -77,6 +81,7 @@ export async function middleware(request: NextRequest) {
 export const config = {
 	matcher: [
 		// APP PAGES
+		'/',
 		'/feed/:path*',
 		'/explore',
 		'/upload',
