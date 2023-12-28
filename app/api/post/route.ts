@@ -10,6 +10,17 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { checkMongooseRef } from '@/lib/server-helper';
 import { headers } from 'next/headers';
 
+const { S3Client, PutObjectCommand, DeleteObjectCommand, GetObjectCommand } = require('@aws-sdk/client-s3');
+const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
+
+const Bucket = process.env.BUCKET_NAME;
+const AWS_REGION = process.env.AWS_REGION;
+const expiresIn = 5 * 60;
+
+const s3Config = { region: AWS_REGION };
+
+const s3Client = new S3Client(s3Config);
+
 export async function POST(req: NextRequest) {
 	try {
 		let data: postType = await req.json();
@@ -40,6 +51,7 @@ const validatePOST = async (body: postType) => {
 	const middlewareSet = JSON.parse(headersList.get('token-decode') || '{}');
 
 	body.createdBy = middlewareSet?.userRef;
+	body.downloadCount = 0;
 	if (!body.createdBy) throw new BadRequestError('CreatedBy is required');
 
 	return body;

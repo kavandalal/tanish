@@ -4,7 +4,7 @@ import { useToast } from '@/components/ui/use-toast';
 import axios from 'axios';
 import { useForm } from 'react-hook-form';
 import { useCallback, useEffect, useState } from 'react';
-import { inputStyle, labelStyle } from '@/components/constant';
+import { defaultError, inputStyle, labelStyle } from '@/components/constant';
 import event from '@/model/event.types';
 import { blobToPreview, previewToBlob } from '@/lib/client-helper';
 import { TImageObj, imageObj } from '@/components/image-upload/types.image';
@@ -15,6 +15,7 @@ import Image from 'next/image';
 import { Popover } from '@/components/ui/popover';
 import { PopoverContent, PopoverTrigger } from '@radix-ui/react-popover';
 import DropZone from '@/components/image-upload/drop-zone';
+import useUploadImageToS3 from '@/lib/hooks/useUploadImg';
 
 const filter = {
 	multiple: true,
@@ -30,13 +31,25 @@ export default function Upload() {
 		watch,
 		handleSubmit,
 		setValue,
+		getValues,
 		formState: { errors },
 		reset,
 	} = useForm();
 
+	const { uploadImageToS3 } = useUploadImageToS3();
+
 	const [currentState, setCurrentState] = useState('true');
 	const [eventRef, setEventRef] = useState('');
 	const [eventList, setEventList] = useState([]);
+	const [imagesHere, setImageHere] = useState<TImageObj[]>([] as TImageObj[]);
+	const [editImg, setEditImg] = useState<TImageObj>({
+		index: undefined,
+		display: '',
+		blob: new Blob(),
+		name: '',
+		size: 0,
+		type: '',
+	});
 
 	const getEventList = useCallback(async () => {
 		try {
@@ -70,6 +83,17 @@ export default function Upload() {
 	const formSubmit = async (data: any) => {
 		setCurrentState('loading');
 
+		let errMsg = '';
+		if (!data.source) errMsg = 'Image is requried';
+		if (!data.caption) errMsg = 'Caption is requried';
+		if (!data.eventRef) errMsg = 'Event is requried';
+
+		if (errMsg) {
+			toast({ variant: 'destructive', title: errMsg });
+			return false;
+		}
+
+		toast({ description: errMsg, variant: 'destructive' });
 		const sendData = data;
 		try {
 			const packet = await axios.post('/api/post', sendData);
@@ -79,7 +103,6 @@ export default function Upload() {
 				return false;
 			}
 
-			reset();
 			toast({ description: 'Successfully uploaded the photo' });
 			return true;
 		} catch (err: any) {
@@ -91,16 +114,6 @@ export default function Upload() {
 			setCurrentState('true');
 		}
 	};
-
-	const [imagesHere, setImageHere] = useState<TImageObj[]>([] as TImageObj[]);
-	const [editImg, setEditImg] = useState<TImageObj>({
-		index: undefined,
-		display: '',
-		blob: new Blob(),
-		name: '',
-		size: 0,
-		type: '',
-	});
 
 	const onCloseImage = useCallback((dataArr: TImageObj[]) => {
 		if (!dataArr) return false;
@@ -164,6 +177,61 @@ export default function Upload() {
 		return true;
 	};
 
+	const executeUpload = async () => {
+		try {
+			for (let img of imagesHere) {
+				const imgSrc = await getPresigned(img);
+				console.log('executeUpload result ', imgSrc);
+				await formSubmit({ source: imgSrc, caption: getValues('caption'), eventRef: getValues('eventRef') });
+			}
+		} catch (err: any) {
+			toast({ variant: 'destructive', title: err?.message || defaultError });
+		} finally {
+			reset();
+			clearImage();
+		}
+	};
+
+	const getPresigned = async (img: TImageObj): Promise<string> => {
+		const imgData = img;
+		const imgSrc: string = await uploadImageToS3({
+			url: '/api/post/action/presigned-url',
+			sendData: {
+				currentFileName: imgData?.name?.split('/')?.pop() || '',
+				ext: imgData?.type.split('/')[1],
+				type: 'post',
+			},
+			body: imgData?.blob,
+			headers: { 'Content-Type': imgData.blob.type },
+		});
+
+		return imgSrc;
+
+		// const sendData = { ext: 'png', type: 'post' };
+		// try {
+		// 	const packet = await axios.post('/api/post/action/presigned-url', sendData);
+
+		// 	if (!packet?.data?.ok) {
+		// 		toast({ variant: 'destructive', title: packet?.data?.errors?.[0]?.message });
+		// 		return false;
+		// 	}
+
+		// 	// 	"packet": {
+		// 	//     "s3Data": {
+		// 	//         "url": "https://tanish-app.s3.ap-south-1.amazonaws.com/post/qZwaUFdLI2.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAYPKAVF2HRZE4JQPX%2F20231228%2Fap-south-1%2Fs3%2Faws4_request&X-Amz-Date=20231228T054259Z&X-Amz-Expires=300&X-Amz-Signature=e93174aff69510e9c7570cbac9e9e459bd4b944054776bf8746d17a6ccd275ab&X-Amz-SignedHeaders=host&x-id=PutObject",
+		// 	//         "source": "post/qZwaUFdLI2.png"
+		// 	//     }
+		// 	// }
+
+		// 	return packet?.data?.s3Data;
+		// } catch (err: any) {
+		// 	const errMsg = err?.response?.data?.errors?.[0]?.message;
+		// 	console.error(errMsg);
+		// 	toast({ variant: 'destructive', title: errMsg });
+		// 	return false;
+		// }
+	};
+
 	return (
 		<div className='grid gap-4 '>
 			{/* <b>Upload</b>
@@ -176,7 +244,7 @@ export default function Upload() {
 				<div className='flex justify-between my-6'>
 					<h4 className='font-bold text-2xl'>Upload</h4>
 				</div>
-				<form onSubmit={handleSubmit(formSubmit)} className='grid gap-10'>
+				<form className='grid gap-10'>
 					<div className='relative'>
 						{/* <input {...register('source', { required: true })} placeholder='Source' className={inputStyle} />
 						<label className={labelStyle}>Source</label>
@@ -272,7 +340,8 @@ export default function Upload() {
 					<div className='flex justify-center'>
 						<button
 							disabled={currentState === 'loading'}
-							type='submit'
+							type='button'
+							onClick={executeUpload}
 							className='w-56  py-2 text-lg text-white font-semibold text-center rounded-full bg-purple-500 transition-all hover:bg-purple-600 focus:outline-none'>
 							Upload
 						</button>

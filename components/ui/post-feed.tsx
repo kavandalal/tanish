@@ -1,7 +1,7 @@
 'use client';
 
 import postType from '@/model/post.types';
-import { Heart, MoreVertical, PenIcon, Trash } from 'lucide-react';
+import { ArrowDownToLine, Heart, MoreVertical, PenIcon, Trash, Trash2 } from 'lucide-react';
 import { Button } from './button';
 import {
 	DropdownMenu,
@@ -10,19 +10,24 @@ import {
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from './dropdown-menu';
-import { useEffect, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { useToast } from './use-toast';
 import Image from 'next/image';
 import userType from '@/model/user.types';
 import Link from 'next/link';
 import { Types } from 'mongoose';
 import axios from 'axios';
+import { Popover } from './popover';
+import { PopoverContent, PopoverTrigger } from '@radix-ui/react-popover';
+import { S3BucketBaseUrl } from '../constant';
+import { downloadImage } from '@/lib/client-helper';
 
 type PostFeed = {
 	data: postType & { createdBy: userType } & { likes?: [userType] | [Types.ObjectId] };
+	setCallApi?: Dispatch<SetStateAction<boolean>>;
 };
 
-function PostFeed({ data }: PostFeed) {
+function PostFeed({ data, setCallApi }: PostFeed) {
 	const { toast } = useToast();
 
 	const [likes, setLikes] = useState<any>();
@@ -69,20 +74,91 @@ function PostFeed({ data }: PostFeed) {
 		}
 	};
 
+	const clearImage = async (postRef: string) => {
+		try {
+			const result = await axios.delete(`/api/post/action/${postRef}`);
+			if (!result?.data?.ok) {
+				toast({
+					variant: 'destructive',
+					title: result?.data?.errors?.[0]?.message,
+				});
+				return false;
+			}
+
+			if (setCallApi) {
+				setCallApi((prev: boolean) => !prev);
+			}
+		} catch (err: any) {
+			const errMsg = err?.response?.data?.errors?.[0]?.message;
+			console.error(errMsg);
+			toast({ variant: 'destructive', title: errMsg || 'Something went wrong' });
+			return false;
+		}
+	};
+
+	const incrementCounterAPI = async (postRef: string) => {
+		try {
+			const result = await axios.get(`/api/post/action/download/${postRef}`);
+			if (!result?.data?.ok) {
+				toast({
+					variant: 'destructive',
+					title: result?.data?.errors?.[0]?.message,
+				});
+				return false;
+			}
+		} catch (err: any) {
+			const errMsg = err?.response?.data?.errors?.[0]?.message;
+			console.error(errMsg);
+			toast({ variant: 'destructive', title: errMsg || 'Something went wrong' });
+			return false;
+		}
+	};
+
 	return (
-		<div className='group flex flex-col relative overflow-hidden mb-4  border-opacity-5 rounded-2xl z-10 post-shadow'>
+		<div className='group flex flex-col relative overflow-hidden mb-4 border-opacity-5 rounded-2xl z-10 post-shadow'>
 			<div className='p-4 capitalize font-semibold text-lg'>
 				<Link target='_self' href={`/profile/${data?.createdBy?._id}`}>
 					{data?.createdBy && data?.createdBy?.name}
 				</Link>
 			</div>
+			<Popover>
+				<PopoverTrigger className='absolute top-2 right-2 p-2 shadow-md bg-[hsl(var(--background))] rounded-lg'>
+					<MoreVertical />
+				</PopoverTrigger>
+				<PopoverContent className='duration-500 max-w-fit animate-in text-[hsl(var(--foreground))]'>
+					<div className='flex flex-col '>
+						<Button
+							variant={'outline'}
+							type='button'
+							onClick={() => {
+								downloadImage({ source: data?.source, caption: data?.caption });
+								incrementCounterAPI(data?._id);
+							}}
+							className='flex justify-between w-[140px] bg-[hsl(var(--background))]'>
+							<ArrowDownToLine color='green' />
+							<span className=''>Download </span>
+						</Button>
+						{userID === data?.createdBy?._id && (
+							<Button
+								variant={'outline'}
+								type='button'
+								onClick={() => clearImage(data?._id)}
+								className='flex justify-between w-[140px] bg-[hsl(var(--background))]'>
+								<Trash2 color='red' />
+								<span className=''>Delete </span>
+							</Button>
+						)}
+					</div>
+				</PopoverContent>
+			</Popover>
+
 			<Link target='_self' href={`/feed/${data?._id}`} className='flex justify-center items-center flex-grow'>
 				<Image
 					width={200}
 					height={200}
 					className='object-contain w-full h-100'
 					style={{ maxHeight: '500px' }}
-					src={data?.source}
+					src={`${S3BucketBaseUrl}${data?.source}`}
 					alt=''
 					priority
 				/>

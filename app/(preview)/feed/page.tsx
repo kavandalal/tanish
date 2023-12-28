@@ -16,6 +16,7 @@ export default function Feed() {
 	const searchParams = useSearchParams();
 
 	const [currentState, setCurrentState] = useState('false');
+	const [callApi, setCallApi] = useState(false);
 
 	const [eventRef, setEventRef] = useState('');
 	const [eventList, setEventList] = useState([]);
@@ -75,7 +76,7 @@ export default function Feed() {
 
 	useEffect(() => {
 		getEventList();
-	}, [getEventList]);
+	}, [getEventList, callApi]);
 
 	useEffect(() => {
 		if (eventRef) {
@@ -123,7 +124,9 @@ export default function Feed() {
 			</div>
 			<div className='grid grid-cols-1 md:grid-cols-3 md:gap-2 '>
 				{Array.isArray(postList) &&
-					postList?.map((post: postType & { createdBy: userType }) => <PostFeed data={post} />)}
+					postList?.map((post: postType & { createdBy: userType }) => (
+						<PostFeed data={post} key={post?._id} setCallApi={setCallApi} />
+					))}
 			</div>
 		</div>
 	);

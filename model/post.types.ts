@@ -9,4 +9,5 @@ export default interface post {
 	caption: string;
 	createdBy: Types.ObjectId;
 	likes: [Types.ObjectId];
+	downloadCount: number;
 }

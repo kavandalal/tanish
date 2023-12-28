@@ -9,6 +9,7 @@ import InternalServerError from '@/error-handler/internal-server';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { checkMongooseRef } from '@/lib/server-helper';
 import { headers } from 'next/headers';
+import { deleteImage } from '../presigned-url/route';
 
 export async function PATCH(req: NextRequest, { params }: { params: { postID: string } }) {
 	try {
@@ -55,6 +56,8 @@ export async function DELETE(req: any, { params }: { params: { postID: string } 
 
 		let packet = await Post.findOneAndDelete({ _id: postRef });
 		if (!packet) throw new BadRequestError('Event does not exists!!!');
+
+		deleteImage({ source: packet?.source });
 
 		return NextResponse.json({ ok: true });
 	} catch (err) {

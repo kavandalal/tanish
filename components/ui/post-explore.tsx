@@ -13,6 +13,7 @@ import {
 import { useState } from 'react';
 import { useToast } from './use-toast';
 import Image from 'next/image';
+import { S3BucketBaseUrl } from '../constant';
 
 type PostExplore = {
 	data: postType;
@@ -33,7 +34,14 @@ function PostExplore({ data, openModal, editable, deleteHandle }: PostExplore) {
 
 	return (
 		<div className='group aspect-square relative overflow-hidden bg-slate-100 dark:bg-slate-700 rounded-md'>
-			<Image width={200} height={200} className='object-contain w-full h-full' src={data?.source} alt='' priority />
+			<Image
+				width={200}
+				height={200}
+				className='object-contain w-full h-full'
+				src={`${S3BucketBaseUrl}${data?.source}`}
+				alt=''
+				priority
+			/>
 			<div className='absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10'>
 				<div className='bg-black bg-opacity-50 p-4 rounded-md w-full h-full flex justify-center items-center'>
 					<p className='text-white cursor-pointer'>{data?.caption}</p>

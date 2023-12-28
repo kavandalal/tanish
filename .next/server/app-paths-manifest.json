@@ -1,0 +1,5 @@
+{
+  "/page": "app/page.js",
+  "/(preview)/feed/page": "app/(preview)/feed/page.js",
+  "/api/post/action/download/[postID]/route": "app/api/post/action/download/[postID]/route.js"
+}

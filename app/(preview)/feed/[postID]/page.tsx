@@ -12,12 +12,14 @@ export default function Feed() {
 	const { toast } = useToast();
 	const pathname = usePathname();
 
+	const [callApi, setCallApi] = useState(false);
 	const [currentState, setCurrentState] = useState('false');
+
 	const [postData, setPostData] = useState<postType & { createdBy: userType } & { likes?: [userType] }>();
 
 	useEffect(() => {
 		getInitData();
-	}, []);
+	}, [callApi]);
 
 	const getInitData = async () => {
 		if (!pathname) return false;
@@ -61,7 +63,7 @@ export default function Feed() {
 			<div className='my-6 flex justify-between'>
 				<h4 className='font-bold text-2xl'>Post </h4>
 			</div>
-			<div>{postData && <PostFeed data={postData} />}</div>
+			<div>{postData && <PostFeed data={postData} setCallApi={setCallApi} />}</div>
 		</div>
 	);
 }

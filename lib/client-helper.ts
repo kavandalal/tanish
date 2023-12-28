@@ -30,7 +30,9 @@ export const blobToPreview = async (blob: Blob): Promise<string | false> => {
 	}
 };
 
+import { S3BucketBaseUrl } from '@/components/constant';
 import { toast } from '@/components/ui/use-toast';
+import axios from 'axios';
 
 export const previewToBlob = (preview: any) => {
 	if (!preview) return false;
@@ -83,4 +85,47 @@ export const previewToBlob = (preview: any) => {
 	};
 
 	return previewToBlob();
+};
+
+export const getBlob = async (fileUri: string) => {
+	try {
+		const resp = await fetch(fileUri);
+		const imageBody = await resp.blob();
+		return imageBody;
+	} catch (err: any) {
+		return new Error(err?.message);
+	}
+};
+
+export const getExtension = (base64Data: string) => {
+	if (base64Data.indexOf(S3BucketBaseUrl) !== -1) {
+		return base64Data.split('.').pop();
+	}
+	return base64Data.substring('data:image/'.length, base64Data.indexOf(';base64')).trim();
+};
+
+export const downloadImage = async ({ source, caption }: { source: string; caption: string }) => {
+	const url = `https://tanish-app.s3.ap-south-1.amazonaws.com/${source}`;
+	const res = await axios({
+		url,
+		method: 'GET',
+		responseType: 'blob',
+	}).catch((e) => {
+		throw e;
+	});
+
+	const fileType = getExtension(url);
+	downloadFile({ fileBlob: res?.data, fileName: caption, fileType: fileType || 'png' });
+};
+
+const downloadFile = ({ fileBlob, fileName, fileType }: { fileBlob: Blob; fileName: string; fileType: string }) => {
+	const url = window.URL.createObjectURL(new Blob([fileBlob]));
+	const link = document.createElement('a');
+	link.href = url;
+	link.setAttribute('download', `${fileName}.${fileType}`);
+	document.body.appendChild(link);
+	link.click();
+	link.remove();
+	link.style.display = 'none';
+	window.URL.revokeObjectURL(url);
 };

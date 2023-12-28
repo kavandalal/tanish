@@ -30,7 +30,7 @@ type login = { phone?: string; email?: string };
 export async function POST(req: NextRequest) {
 	let data: login = await req.json();
 	try {
-		console.log('inside POST register');
+		console.log('inside POST register check');
 		data = await validatePOST(data);
 
 		await connectMongoDB();

@@ -8,6 +8,7 @@ const postSchema = new Schema<post>(
 		caption: { type: String, trim: true },
 		source: { type: String, trim: true, required: true },
 		likes: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+		downloadCount: { type: Number, default: 0 },
 	},
 	{
 		toJSON: {
