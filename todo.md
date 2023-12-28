@@ -13,3 +13,5 @@ git commit -m "build update"
 git push origin main
 
 git pull origin main && pm2 restart all && pm2 logs
+
+pm2 restart all && pm2 logs
