@@ -35,7 +35,7 @@ export async function GET(req: NextRequest, { params }: { params: { eventID: str
 		let list, total
 		if (eventRef == 'all'){
 			list = await Post.find().sort('-createdAt').skip(limit * (page - 1)).limit(limit).populate('createdBy');
-			total = await Post.countDocuments
+			total = await Post.countDocuments()
 		}else { 
 			list =  await Post.find({ eventRef })
 			.sort(filter as any)
