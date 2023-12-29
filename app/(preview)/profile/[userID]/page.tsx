@@ -6,7 +6,7 @@ import eventType from '@/model/event.types';
 import postType from '@/model/post.types';
 import userType from '@/model/user.types';
 import axios from 'axios';
-import { CircleDot, MapPin } from 'lucide-react';
+import { CircleDot, ExternalLink, MapPin } from 'lucide-react';
 import moment from 'moment-timezone';
 
 import { usePathname } from 'next/navigation';
@@ -90,7 +90,18 @@ export default function Profile() {
 		<div className='grid gap-4 '>
 			<div className='container'>
 				<div className='my-6'>
-					<h4 className='font-bold text-2xl'>Profile</h4>
+					<div className='flex justify-between'>
+						<h4 className='font-bold text-2xl'>Profile</h4>
+						<div>
+							<Link
+								href='https://portfolio-kavan.vercel.app/contact/'
+								className='text-sm bg-[hsl(var(--foreground))] text-[hsl(var(--background))] p-2 py-1 rounded flex'
+								target='_blank'>
+								Contact Developer
+								<ExternalLink className='ms-2' size={18} />
+							</Link>
+						</div>
+					</div>
 					<h5 className='font-bold text-xl'>
 						{currentState === 'true' && (
 							<span>

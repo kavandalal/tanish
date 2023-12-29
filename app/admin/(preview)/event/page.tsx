@@ -65,7 +65,6 @@ export default function AdminDashboard() {
 		const start = moment.tz(data?.start, 'Asia/Kolkata');
 		const n = start.format('YYYY-MM-DD');
 
-		console.log(n, typeof n);
 		if (mode === 'edit') {
 			// console.log(data?.start);
 			setValue('name', data?.name);

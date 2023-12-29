@@ -31,7 +31,6 @@ export async function GET(req: NextRequest, { params }: { params: { eventID: str
 
 export async function DELETE(req: NextRequest, { params }: { params: { eventID: string } }) {
 	try {
-		console.log('here ');
 		const eventRef = params.eventID;
 		if (!checkMongooseRef(eventRef)) throw new BadRequestError('Event ID is not valid!!!');
 

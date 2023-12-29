@@ -50,8 +50,6 @@ function useUploadImageToS3() {
 		const url = dataHere?.url;
 		const checkLink = dataHere?.source;
 
-		console.log('send uploadImageAndCheck', url, body, checkLink);
-
 		status = await uploadImageAndCheck({ url, body, checkLink, headers });
 		if (status) returnLink = checkLink;
 		else {

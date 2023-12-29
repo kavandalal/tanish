@@ -36,7 +36,6 @@ function PostFeed({ data, setCallApi }: PostFeed) {
 	const userID = localStorage.getItem('userID');
 
 	useEffect(() => {
-		console.log(data?.likes);
 		const updatedList = typeof data?.likes?.[0] === 'string' ? data?.likes : data?.likes?.map((i: any) => i?._id);
 		setLikes(updatedList);
 		if (updatedList?.includes(userID)) {
@@ -157,7 +156,7 @@ function PostFeed({ data, setCallApi }: PostFeed) {
 					width={200}
 					height={200}
 					className='object-contain w-full h-100'
-					style={{ maxHeight: '500px' }}
+					style={{ maxHeight: '400px' }}
 					src={`${S3BucketBaseUrl}${data?.source}`}
 					alt=''
 					priority
