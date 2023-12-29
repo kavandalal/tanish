@@ -115,8 +115,16 @@ function PostFeed({ data, setCallApi }: PostFeed) {
 
 	return (
 		<div className='group flex flex-col relative overflow-hidden mb-4 border-opacity-5 rounded-2xl z-10 post-shadow'>
-			<div className='p-4 capitalize font-semibold text-lg'>
-				<Link target='_self' href={`/profile/${data?.createdBy?._id}`}>
+			<div className='p-4 capitalize font-semibold text-lg flex'>
+				<Image
+					width={35}
+					height={35}
+					className='object-cover me-3'
+					src={data?.createdBy?.side === 'bride' ? `/assets/bride.png` : `/assets/groom.png`}
+					alt=''
+					priority
+				/>
+				<Link target='_self' className='flex items-center' href={`/profile/${data?.createdBy?._id}`}>
 					{data?.createdBy && data?.createdBy?.name}
 				</Link>
 			</div>
