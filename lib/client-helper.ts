@@ -122,7 +122,7 @@ const downloadFile = ({ fileBlob, fileName, fileType }: { fileBlob: Blob; fileNa
 	const url = window.URL.createObjectURL(new Blob([fileBlob]));
 	const link = document.createElement('a');
 	link.href = url;
-	link.setAttribute('download', `${fileName}.${fileType}`);
+	link.setAttribute('download', `${fileName?.replace('.', '_')?.replace(' ', '_')}.${fileType}`);
 	document.body.appendChild(link);
 	link.click();
 	link.remove();
