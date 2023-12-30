@@ -1,26 +1,19 @@
 'use client';
 
-import postType from '@/model/post.types';
-import { ArrowDownToLine, Heart, MoreVertical, PenIcon, Trash, Trash2 } from 'lucide-react';
-import { Button } from './button';
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuGroup,
-	DropdownMenuItem,
-	DropdownMenuTrigger,
-} from './dropdown-menu';
-import { Dispatch, SetStateAction, useEffect, useState } from 'react';
-import { useToast } from './use-toast';
-import Image from 'next/image';
-import userType from '@/model/user.types';
-import Link from 'next/link';
-import { Types } from 'mongoose';
-import axios from 'axios';
-import { Popover } from './popover';
-import { PopoverContent, PopoverTrigger } from '@radix-ui/react-popover';
-import { S3BucketBaseUrl } from '../constant';
 import { downloadImage } from '@/lib/client-helper';
+import postType from '@/model/post.types';
+import userType from '@/model/user.types';
+import { PopoverContent, PopoverTrigger } from '@radix-ui/react-popover';
+import axios from 'axios';
+import { ArrowDownToLine, Heart, MoreVertical, Trash2 } from 'lucide-react';
+import { Types } from 'mongoose';
+import Image from 'next/image';
+import Link from 'next/link';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import { S3BucketBaseUrl } from '../constant';
+import { Button } from './button';
+import { Popover } from './popover';
+import { useToast } from './use-toast';
 
 type PostFeed = {
 	data: postType & { createdBy: userType } & { likes?: [userType] | [Types.ObjectId] };
