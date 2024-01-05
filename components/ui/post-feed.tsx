@@ -154,8 +154,8 @@ function PostFeed({ data, setCallApi }: PostFeed) {
 
 			<Link target='_self' href={`/feed/${data?._id}`} className='flex justify-center items-center flex-grow'>
 				<Image
-					width={200}
-					height={200}
+					width={400}
+					height={400}
 					className='object-contain w-full h-100'
 					style={{ maxHeight: '400px' }}
 					src={`${S3BucketBaseUrl}${data?.source}`}

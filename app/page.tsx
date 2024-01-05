@@ -179,7 +179,10 @@ export default function Home() {
 									</div>
 
 									<div className='relative'>
-										<select {...register('side')} className={inputStyle} style={{ backgroundColor : 'white', color : 'black'}}>
+										<select
+											{...register('side')}
+											className={inputStyle}
+											style={{ backgroundColor: 'white', color: 'black' }}>
 											<option value='bride'>Ladkiwale (Bride)</option>
 											<option value='groom'>Ladkewale (Groom)</option>
 										</select>

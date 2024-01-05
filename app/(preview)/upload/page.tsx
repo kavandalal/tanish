@@ -51,7 +51,7 @@ export default function Upload() {
 		size: 0,
 		type: '',
 	});
-	const [progress, setProgress] = useState ( 0)
+	const [progress, setProgress] = useState(0);
 
 	const getEventList = useCallback(async () => {
 		try {
@@ -181,23 +181,22 @@ export default function Upload() {
 
 	const executeUpload = async () => {
 		try {
-			if( !getValues('caption') ||  !getValues('eventRef')) { 
+			if (!getValues('caption') || !getValues('eventRef')) {
 				toast({ variant: 'destructive', title: 'Caption and event are required' });
-				return 
+				return;
 			}
-			const totalLength = imagesHere.length
-			for (let [ index, img] of Object.entries(imagesHere)) {
+			const totalLength = imagesHere.length;
+			for (let [index, img] of Object.entries(imagesHere)) {
 				const imgSrc = await getPresigned(img);
 				await formSubmit({ source: imgSrc, caption: getValues('caption'), eventRef: getValues('eventRef') });
-				setProgress( ( (Number(index) + 1) / totalLength ) * 100 )
+				setProgress(((Number(index) + 1) / totalLength) * 100);
 			}
 			reset();
 			clearImage();
 		} catch (err: any) {
 			toast({ variant: 'destructive', title: err?.message || defaultError });
 		} finally {
-			setProgress( 0 )
-			
+			setProgress(0);
 		}
 	};
 
@@ -328,7 +327,7 @@ export default function Upload() {
 					</div>
 
 					<div className='relative'>
-						<select {...register('eventRef')} className={inputStyle} placeholder='Photo belong to event'>
+						<select {...register('eventRef')} className={inputStyle} placeholder='Photo belongs to event'>
 							<option value={''}>Select</option>
 
 							{eventList?.length > 0 &&
@@ -338,7 +337,7 @@ export default function Upload() {
 									</option>
 								))}
 						</select>
-						<label className={labelStyle}>Photo belong to event</label>
+						<label className={labelStyle}>Photo belongs to event</label>
 					</div>
 
 					{/* <input
@@ -347,7 +346,7 @@ export default function Upload() {
 								value='Enter Event'
 							/> */}
 					<div className='flex justify-center items-center flex-col'>
-						{ progress!== 0 &&   <Progress value={progress}  className='mb-2'/>  } 
+						{progress !== 0 && <Progress value={progress} className='mb-2' />}
 						<button
 							disabled={currentState === 'loading'}
 							type='button'

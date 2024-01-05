@@ -188,7 +188,7 @@ export default function AdminDashboard() {
 							</div>
 
 							<div className='relative'>
-								<select {...register('eventRef')} className={inputStyle} placeholder='Photo belong to event'>
+								<select {...register('eventRef')} className={inputStyle} placeholder='Photo belongs to event'>
 									<option value={''}>Select</option>
 
 									{eventList?.length > 0 &&
@@ -198,7 +198,7 @@ export default function AdminDashboard() {
 											</option>
 										))}
 								</select>
-								<label className={labelStyle}>Post belong to event</label>
+								<label className={labelStyle}>Post belongs to event</label>
 							</div>
 						</div>
 						<DialogFooter>

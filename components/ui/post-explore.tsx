@@ -35,8 +35,8 @@ function PostExplore({ data, openModal, editable, deleteHandle }: PostExplore) {
 	return (
 		<div className='group aspect-square relative overflow-hidden bg-slate-100 dark:bg-slate-700 rounded-md'>
 			<Image
-				width={200}
-				height={200}
+				width={400}
+				height={400}
 				className='object-cover w-full h-full'
 				src={`${S3BucketBaseUrl}${data?.source}`}
 				alt=''
