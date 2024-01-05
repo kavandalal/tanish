@@ -6,7 +6,7 @@ const userSchema = new Schema<user>(
 		name: { type: String, trim: true },
 		email: { type: String, trim: true, unique: true, index: true },
 		phone: { type: String, trim: true },
-		side: { type: String, enum: ['bride', 'groom', 'dev'], index: true, default: 'groom' },
+		side: { type: String, enum: ['bride', 'groom', 'none', 'dev'], index: true, default: 'groom' },
 		role: { type: String, enum: ['user', 'admin'], default: 'user' },
 		postsRef: [{ type: Schema.Types.ObjectId, ref: 'Post' }],
 	},

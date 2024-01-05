@@ -185,6 +185,7 @@ export default function Home() {
 											style={{ backgroundColor: 'white', color: 'black' }}>
 											<option value='bride'>Ladkiwale (Bride)</option>
 											<option value='groom'>Ladkewale (Groom)</option>
+											<option value='none'>Bin bulaye baraati (None)</option>
 										</select>
 										<label className={labelStyle}>You belong from</label>
 									</div>

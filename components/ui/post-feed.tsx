@@ -106,6 +106,8 @@ function PostFeed({ data, setCallApi }: PostFeed) {
 		}
 	};
 
+	console;
+
 	return (
 		<div className='group flex flex-col relative overflow-hidden mb-4 border-opacity-5 rounded-2xl z-10 post-shadow'>
 			<div className='p-4 capitalize font-semibold text-lg flex'>
@@ -113,7 +115,13 @@ function PostFeed({ data, setCallApi }: PostFeed) {
 					width={35}
 					height={35}
 					className='object-cover me-3'
-					src={data?.createdBy?.side === 'bride' ? `/assets/bride.png` : `/assets/groom.png`}
+					src={
+						data?.createdBy?.side === 'bride'
+							? `/assets/bride.png`
+							: data?.createdBy?.side === 'groom'
+								? `/assets/groom.png`
+								: '/assets/none.png'
+					}
 					alt=''
 					priority
 				/>
